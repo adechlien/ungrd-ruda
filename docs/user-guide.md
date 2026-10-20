@@ -31,6 +31,8 @@ Para salir, abrir el menú del perfil y seleccionar la opción de cierre de sesi
 
 La navegación permite consultar formularios, eventos y estadísticas. El menú del perfil muestra los datos de la cuenta y las preferencias de apariencia.
 
+En pantallas de menos de 700 px de ancho, la navegación aparece como una barra horizontal fija en la parte inferior, con accesos a Registros, Eventos, Estadísticas, Perfil y Avisos. Los paneles de perfil y notificaciones se abren encima de la barra. En pantallas más amplias se utiliza la barra lateral.
+
 Solo está disponible **Light / modo claro**. Las opciones Dark y System permanecen visibles, pero deshabilitadas.
 
 ### Formularios

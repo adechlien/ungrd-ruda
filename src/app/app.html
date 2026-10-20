@@ -89,7 +89,7 @@
         <ng-container [ngTemplateOutlet]="accountPanels" />
         <div class="workspace-profile-row flex items-center pt-4 pb-0 border-t border-solid border-t-border-soft px-0 gap-[3px] in-[[data-theme=dark]]:[border-top-color:rgb(255_255_255_/_20%)] max-[700px]:flex-col max-[700px]:py-3.5 max-[700px]:gap-2">
           <button #profileButton type="button" class="workspace-profile flex items-center min-w-0 flex-1 text-left rounded-[7px] py-[5px] px-0 gap-[9px] in-[[data-theme=dark]]:hover:bg-[rgb(255_255_255_/_10%)] in-[[data-theme=dark]]:focus-visible:[outline-color:#ffca20] max-[700px]:flex-none max-[700px]:justify-center max-[700px]:w-10 max-[700px]:p-1.5 hover:bg-surface-selected focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3" aria-label="Mi perfil" [attr.aria-expanded]="profileOpen()" aria-controls="workspace-profile-menu" (click)="toggleProfile()">
-            <tabler-icon class="shrink-0 pl-1" icon="user-circle" [size]="27" /><span class="max-[700px]:hidden"
+            <tabler-icon class="shrink-0 pl-1" icon="user-circle" [size]="27" /><span class="hidden max-[700px]:block">Perfil</span><span class="max-[700px]:hidden"
               ><strong class="block text-[13px] font-semibold max-[1100px]:text-[12px]">{{ recordStore.user()?.name }}</strong><small class="in-[[data-theme=dark]]:text-[#ffca20] block text-[9px] tracking-[0.5px] mt-[1px] text-brand-purple">{{ recordStore.user()?.organizationType }}</small></span
             >
           </button>
@@ -105,7 +105,7 @@
             aria-controls="workspace-notifications"
             (click)="toggleNotifications()"
           >
-            <tabler-icon icon="bell" [size]="24" />
+            <tabler-icon icon="bell" [size]="24" /><span class="hidden max-[700px]:block">Avisos</span>
             @if (unreadNotifications() && pendingRecords().length) {
               <span class="workspace-unread absolute w-[7px] h-[7px] rounded-full bg-brand-purple top-[5px] right-1 border-solid border border-surface-muted in-[[data-theme=dark]]:bg-[#ffca20] in-[[data-theme=dark]]:[border-top-color:#203360] in-[[data-theme=dark]]:[border-right-color:#203360] in-[[data-theme=dark]]:[border-bottom-color:#203360] in-[[data-theme=dark]]:[border-left-color:#203360]" aria-hidden="true"></span>
             }
@@ -118,30 +118,30 @@
     </div>
 
     } @else {
-      <div class="flex h-full min-w-0 flex-col items-center px-2 py-4">
-        <img class="h-9 w-8 object-contain in-[[data-theme=dark]]:mix-blend-screen" src="/ungrd.png?v=2" alt="UNGRD" />
-        <nav class="mt-7 grid gap-3" aria-label="Secciones">
+      <div class="workspace-sidebar workspace-sidebar-compact flex h-full min-w-0 flex-col items-center px-2 py-4">
+        <img class="workspace-logo h-9 w-8 object-contain in-[[data-theme=dark]]:mix-blend-screen" src="/ungrd.png?v=2" alt="UNGRD" />
+        <nav class="workspace-nav mt-7 grid gap-3" aria-label="Secciones">
           @for (item of navigationItems; track item.tab) {
             <button type="button" class="grid size-10 place-items-center rounded-lg transition-colors hover:bg-surface-selected in-[[data-theme=dark]]:hover:bg-[rgb(255_255_255_/_10%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-purple in-[[data-theme=dark]]:focus-visible:outline-[#ffca20] [&.active]:bg-brand-purple [&.active]:text-white in-[[data-theme=dark]]:[&.active]:bg-[#5274b2]" [attr.aria-label]="item.label" [title]="item.label" [class.active]="item.tab === 'forms' ? view() === 'form' || dashboardTab() === 'forms' : view() === 'dashboard' && dashboardTab() === item.tab" [attr.aria-current]="(item.tab === 'forms' ? view() === 'form' || dashboardTab() === 'forms' : view() === 'dashboard' && dashboardTab() === item.tab) ? 'page' : null" (click)="navigateDashboard(item.tab)">
-              <tabler-icon [icon]="item.icon" [size]="22" />
+              <tabler-icon [icon]="item.icon" [size]="22" /><span class="hidden max-[700px]:block">{{ item.label }}</span>
             </button>
           }
         </nav>
-        <div class="mt-auto flex w-full flex-col items-center gap-3 border-t border-border-soft in-[[data-theme=dark]]:border-white/20 pt-4">
-          <button type="button" class="relative grid size-9 place-items-center rounded-lg hover:bg-surface-selected in-[[data-theme=dark]]:hover:bg-[rgb(255_255_255_/_10%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-purple in-[[data-theme=dark]]:focus-visible:outline-[#ffca20]" aria-label="Notificaciones" title="Notificaciones" [attr.aria-expanded]="notificationsOpen()" aria-controls="workspace-notifications" (click)="toggleNotifications()">
-            <tabler-icon icon="bell" [size]="22" />
-            @if (unreadNotifications() && pendingRecords().length) { <span class="absolute right-1 top-1 size-1.5 rounded-full bg-brand-purple in-[[data-theme=dark]]:bg-[#ffca20]" aria-hidden="true"></span> }
+        <div class="workspace-account workspace-compact-account mt-auto flex w-full flex-col items-center gap-3 border-t border-border-soft in-[[data-theme=dark]]:border-white/20 pt-4">
+          <button type="button" class="workspace-bell relative grid size-9 place-items-center rounded-lg hover:bg-surface-selected in-[[data-theme=dark]]:hover:bg-[rgb(255_255_255_/_10%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-purple in-[[data-theme=dark]]:focus-visible:outline-[#ffca20]" aria-label="Notificaciones" title="Notificaciones" [attr.aria-expanded]="notificationsOpen()" aria-controls="workspace-notifications" (click)="toggleNotifications()">
+            <tabler-icon icon="bell" [size]="22" /><span class="hidden max-[700px]:block">Avisos</span>
+            @if (unreadNotifications() && pendingRecords().length) { <span class="workspace-unread absolute right-1 top-1 size-1.5 rounded-full bg-brand-purple in-[[data-theme=dark]]:bg-[#ffca20]" aria-hidden="true"></span> }
           </button>
-          <button #profileButton type="button" class="grid size-9 place-items-center rounded-full hover:bg-surface-selected in-[[data-theme=dark]]:hover:bg-[rgb(255_255_255_/_10%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-purple in-[[data-theme=dark]]:focus-visible:outline-[#ffca20]" aria-label="Mi perfil" [title]="recordStore.user()?.name || 'Mi perfil'" [attr.aria-expanded]="profileOpen()" aria-controls="workspace-profile-menu" (click)="toggleProfile()">
-            <tabler-icon icon="user-circle" [size]="27" />
+          <button #profileButton type="button" class="workspace-profile grid size-9 place-items-center rounded-full hover:bg-surface-selected in-[[data-theme=dark]]:hover:bg-[rgb(255_255_255_/_10%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-purple in-[[data-theme=dark]]:focus-visible:outline-[#ffca20]" aria-label="Mi perfil" [title]="recordStore.user()?.name || 'Mi perfil'" [attr.aria-expanded]="profileOpen()" aria-controls="workspace-profile-menu" (click)="toggleProfile()">
+            <tabler-icon icon="user-circle" [size]="27" /><span class="hidden max-[700px]:block">Perfil</span>
           </button>
         </div>
         @if (profileOpen() || notificationsOpen()) {
-          <div class="fixed bottom-6 left-22 z-50 max-h-[calc(100dvh-48px)] w-[min(280px,calc(100vw-104px))] overflow-y-auto text-brand-navy">
+          <div class="workspace-account-popover fixed bottom-6 left-22 z-50 max-h-[calc(100dvh-48px)] w-[min(280px,calc(100vw-104px))] overflow-y-auto text-brand-navy">
             <ng-container [ngTemplateOutlet]="accountPanels" />
           </div>
         }
-        @if (sessionMessage()) { <p class="fixed bottom-6 left-22 z-50 w-[min(280px,calc(100vw-104px))] rounded-lg border border-border-soft bg-surface p-4 text-xs text-brand-navy shadow-popup" role="status">{{ sessionMessage() }}</p> }
+        @if (sessionMessage()) { <p class="workspace-session-message fixed bottom-6 left-22 z-50 w-[min(280px,calc(100vw-104px))] rounded-lg border border-border-soft bg-surface p-4 text-xs text-brand-navy shadow-popup" role="status">{{ sessionMessage() }}</p> }
       </div>
     }
       </div>
