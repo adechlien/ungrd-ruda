@@ -1,0 +1,135 @@
+{
+  "registro_declarante": {
+    "primer_apellido": "section-1-3",
+    "segundo_apellido": "section-1-4",
+    "primer_nombre": "section-1-5",
+    "demas_nombres": "section-1-6",
+    "fecha_nacimiento": "section-1-7",
+    "sexo": "section-1-8",
+    "direccion_residencia": "section-1-9",
+    "barrio_vereda_residencia": "section-1-10",
+    "telefono": "section-1-13",
+    "correo_electronico": "section-1-14"
+  },
+  "registro": {
+    "direccion_declaracion": "section-1-18",
+    "fecha_declaracion": "section-1-21",
+    "tipo_declaracion": "section-1-22"
+  },
+  "evento_especifico": {
+    "fecha_inicio": "section-2-23",
+    "hora_inicio": "section-2-24",
+    "vereda_barrio_sector": "section-2-27",
+    "direccion": "section-2-28",
+    "evolucion": "section-2-31",
+    "autoridad_alerta": "section-2-32",
+    "declaratoria_oficial": "section-2-33",
+    "numero_decreto_calamidad": "section-2-34"
+  },
+  "certificacion_desplazamiento": {
+    "fecha_solicitud": "section-2-35",
+    "fecha_emision": "section-2-36",
+    "entidad_apoyo": "section-2-37",
+    "otra_entidad": "section-2-38"
+  },
+  "desplazamiento": {
+    "fecha_salida": "section-2-39",
+    "hora_salida": "section-2-40",
+    "vereda_barrio_sector_origen": "section-2-43",
+    "direccion_origen": "section-2-44",
+    "momento_salida": "section-2-45",
+    "caracter_salida": "section-2-46",
+    "tipo_alojamiento_actual": "section-2-47",
+    "vereda_barrio_sector_actual": "section-2-50",
+    "direccion_actual": "section-2-51",
+    "razon_no_retorno": "section-2-52"
+  },
+  "animal_domestico": {
+    "especie": "section-4-animal-species",
+    "cantidad": "section-4-animal-count",
+    "condicion_actual": "section-4-animal-condition",
+    "requiere_atencion_veterinaria": "section-4-animal-vet",
+    "observaciones": "section-4-animal-notes"
+  },
+  "unidad_productiva": {
+    "tiene_unidad_productiva": "section-4-54",
+    "tipo": "section-4-55",
+    "tenencia": "section-4-56",
+    "ingreso_mensual_pre_evento": "section-4-57",
+    "puede_operar_actualmente": "section-4-58",
+    "empleados_no_familiares": "section-4-59",
+    "tiene_licencia_ambiental": "section-4-60",
+    "empleados_afectados": "section-4-employees-affected",
+    "numero_licencia": "section-4-license-number"
+  },
+  "necesidad_basica": {
+    "alimentacion": "section-4-61",
+    "agua_potable": "section-4-62",
+    "refugio_alojamiento": "section-4-63",
+    "vivienda_origen": "section-4-64",
+    "vestimenta_enceres": "section-4-65",
+    "atencion_medica": "section-4-66",
+    "acceso_educacion": "section-4-67",
+    "saneamiento_basico": "section-4-68",
+    "atencion_humanitaria": "section-4-69",
+    "entidad_atencion_medica": "section-4-medical-entity",
+    "entidad_atencion_humanitaria": "section-4-humanitarian-entity",
+    "fecha_atencion": "section-4-humanitarian-date"
+  },
+  "bien_inmueble": {
+    "tipo": "section-5-property-type",
+    "identificador": "section-5-property-identifier",
+    "uso_principal": "section-5-property-use",
+    "tenencia": "section-5-property-tenure",
+    "estado_post_evento": "section-5-property-state",
+    "valor_aproximado": "section-5-property-value",
+    "tiene_titulo": "section-5-property-title"
+  },
+  "bien_mueble_semoviente": {
+    "descripcion": "section-5-asset-description",
+    "cantidad": "section-5-asset-count",
+    "estado_post_evento": "section-5-asset-state",
+    "valor_aproximado": "section-5-asset-value",
+    "rescatado": "section-5-asset-rescued",
+    "observacion": "section-5-asset-notes"
+  },
+  "informacion_economica": {
+    "ingreso_mensual_total_pre_evento": "section-5-70",
+    "fuente_principal_ingreso": "section-5-71",
+    "continua_recibiendo_ingresos": "section-5-72",
+    "ingreso_equivalente_smmlv": "section-5-income-smmlv",
+    "meses_sin_ingresos": "section-5-months-no-income"
+  },
+  "afectacion_salud": {
+    "miembro_herido_fallecido": "section-5-73",
+    "enfermedad_cronica": "section-5-74",
+    "afectacion_psicosocial": "section-5-75",
+    "atencion_psicosocial": "section-5-76",
+    "descripcion_heridos_fallecidos": "section-5-injuries-description",
+    "descripcion_condicion": "section-5-condition-description",
+    "entidad_atencion": "section-5-psychosocial-entity"
+  },
+  "modulo_etnico": {
+    "relacion_territorial_cultural": "section-6-82",
+    "perdida_sitios_sagrados": "section-6-83",
+    "hogares_desplazados": "section-6-84",
+    "autoridad_acta_comunicado": "section-6-85",
+    "estado_plan_vida": "section-6-86",
+    "amenaza_continuidad_cultural": "section-6-87",
+    "municipio_pdet": "section-6-80",
+    "descripcion_perdida_cultural": "section-6-cultural-loss-description",
+    "totalidad_comunidad": "section-6-whole-community",
+    "documento_acta": "section-6-community-document",
+    "descripcion_amenaza": "section-6-cultural-threat-description"
+  },
+  "seguimiento_etnico": {
+    "entidad_seguimiento": "section-6-88",
+    "requiere_interprete": "section-6-89",
+    "modulo_ungrd_abierto": "section-6-90",
+    "lengua_interprete": "section-6-interpreter-language",
+    "numero_expediente": "section-6-ethnic-file-number"
+  },
+  "hogar": {
+    "numero_formulario_rud": "section-4-53"
+  }
+}

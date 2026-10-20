@@ -1,0 +1,302 @@
+{
+  "organizacion": {
+    "id_organizacion": "bigint",
+    "nombre": "text",
+    "tipo": "text"
+  },
+  "funcionario": {
+    "id_funcionario": "bigint",
+    "id_organizacion": "bigint",
+    "nombre_completo": "text",
+    "cargo": "text",
+    "documento": "text"
+  },
+  "usuario": {
+    "id_usuario": "bigint",
+    "id_funcionario": "bigint",
+    "correo": "text",
+    "password_hash": "text",
+    "rol": "rol_usuario",
+    "activo": "boolean"
+  },
+  "sesion": {
+    "token_hash": "text",
+    "id_usuario": "bigint",
+    "expira_en": "timestamptz",
+    "creado_en": "timestamptz"
+  },
+  "departamento": {
+    "id_departamento": "bigint",
+    "codigo": "text",
+    "nombre": "text"
+  },
+  "municipio": {
+    "id_municipio": "bigint",
+    "id_departamento": "bigint",
+    "codigo": "text",
+    "nombre": "text",
+    "es_pdet": "boolean"
+  },
+  "tipo_evento": {
+    "id_tipo_evento": "bigint",
+    "nombre": "text"
+  },
+  "evento_principal": {
+    "id_evento_principal": "bigint",
+    "id_tipo_evento": "bigint",
+    "nombre": "text",
+    "activo": "boolean"
+  },
+  "evento_especifico": {
+    "id_evento_especifico": "bigint",
+    "id_evento_principal": "bigint",
+    "id_municipio": "bigint",
+    "fecha_inicio": "date",
+    "hora_inicio": "time",
+    "vereda_barrio_sector": "text",
+    "direccion": "text",
+    "evolucion": "text",
+    "autoridad_alerta": "text",
+    "declaratoria_oficial": "text",
+    "numero_decreto_calamidad": "text",
+    "creado_por": "bigint",
+    "creado_en": "timestamptz",
+    "actualizado_en": "timestamptz"
+  },
+  "persona": {
+    "id_persona": "bigint",
+    "tipo_documento": "text",
+    "numero_documento": "text"
+  },
+  "registro": {
+    "id_registro": "uuid",
+    "id_persona_declarante": "bigint",
+    "id_funcionario": "bigint",
+    "id_organizacion_receptora": "bigint",
+    "id_municipio_declaracion": "bigint",
+    "direccion_declaracion": "text",
+    "fecha_declaracion": "date",
+    "tipo_declaracion": "text",
+    "estado": "estado_registro",
+    "version_formato": "smallint",
+    "revision_ruda": "smallint",
+    "version_registro": "integer",
+    "creado_en": "timestamptz",
+    "actualizado_en": "timestamptz",
+    "terminado_en": "timestamptz"
+  },
+  "registro_declarante": {
+    "id_registro": "uuid",
+    "primer_apellido": "text",
+    "segundo_apellido": "text",
+    "primer_nombre": "text",
+    "demas_nombres": "text",
+    "fecha_nacimiento": "date",
+    "sexo": "text",
+    "direccion_residencia": "text",
+    "barrio_vereda_residencia": "text",
+    "id_municipio_residencia": "bigint",
+    "telefono": "text",
+    "correo_electronico": "text"
+  },
+  "desplazamiento": {
+    "id_desplazamiento": "bigint",
+    "id_registro": "uuid",
+    "id_evento_especifico": "bigint",
+    "fecha_salida": "date",
+    "hora_salida": "time",
+    "id_municipio_origen": "bigint",
+    "vereda_barrio_sector_origen": "text",
+    "direccion_origen": "text",
+    "momento_salida": "text",
+    "caracter_salida": "text",
+    "tipo_alojamiento_actual": "text",
+    "id_municipio_actual": "bigint",
+    "vereda_barrio_sector_actual": "text",
+    "direccion_actual": "text",
+    "razon_no_retorno": "text"
+  },
+  "certificacion_desplazamiento": {
+    "id_certificacion": "bigint",
+    "id_desplazamiento": "bigint",
+    "fecha_solicitud": "date",
+    "fecha_emision": "date",
+    "entidad_apoyo": "text",
+    "otra_entidad": "text"
+  },
+  "observacion_registro": {
+    "id_registro": "uuid",
+    "observacion": "text"
+  },
+  "pregunta_guia": {
+    "codigo": "text",
+    "grupo_evento": "text",
+    "revision_ruda": "smallint",
+    "texto": "text",
+    "orden": "integer"
+  },
+  "respuesta_guia": {
+    "id_respuesta": "bigint",
+    "id_registro": "uuid",
+    "codigo_pregunta": "text",
+    "respuesta": "text"
+  },
+  "hogar": {
+    "id_hogar": "bigint",
+    "id_registro": "uuid",
+    "numero_formulario_rud": "text"
+  },
+  "miembro_hogar": {
+    "id_miembro_hogar": "bigint",
+    "id_hogar": "bigint",
+    "numero_orden": "smallint",
+    "apellidos_nombres": "text",
+    "tipo_documento": "text",
+    "numero_documento": "text",
+    "fecha_nacimiento": "date",
+    "genero": "text",
+    "estado_civil": "text",
+    "ocupacion_previa": "text",
+    "lugar_ocupacion_previa": "text",
+    "escolaridad": "text",
+    "cedula_inscrita_votar": "text",
+    "estudiaba": "text",
+    "lugar_estudio": "text",
+    "trabajaba": "text",
+    "lugar_trabajo_empleador": "text",
+    "nivel_sisben": "text",
+    "eps_salud": "text",
+    "relacion_declarante": "text",
+    "etnia": "text",
+    "discapacidad": "text",
+    "gestante_lactante": "boolean",
+    "mujer_cabeza_familia": "boolean",
+    "lugar_inscripcion_cedula": "text"
+  },
+  "animal_domestico": {
+    "id_animal": "bigint",
+    "id_hogar": "bigint",
+    "especie": "text",
+    "cantidad": "integer",
+    "condicion_actual": "text",
+    "requiere_atencion_veterinaria": "text",
+    "observaciones": "text"
+  },
+  "unidad_productiva": {
+    "id_unidad_productiva": "bigint",
+    "id_hogar": "bigint",
+    "tiene_unidad_productiva": "text",
+    "tipo": "text",
+    "tenencia": "text",
+    "ingreso_mensual_pre_evento": "numeric(18,2)",
+    "puede_operar_actualmente": "text",
+    "empleados_no_familiares": "integer",
+    "empleados_afectados": "text",
+    "tiene_licencia_ambiental": "text",
+    "numero_licencia": "text"
+  },
+  "necesidad_basica": {
+    "id_necesidad": "bigint",
+    "id_hogar": "bigint",
+    "alimentacion": "text",
+    "agua_potable": "text",
+    "refugio_alojamiento": "text",
+    "vivienda_origen": "text",
+    "vestimenta_enceres": "text",
+    "atencion_medica": "text",
+    "entidad_atencion_medica": "text",
+    "acceso_educacion": "text",
+    "saneamiento_basico": "text",
+    "atencion_humanitaria": "text",
+    "entidad_atencion_humanitaria": "text",
+    "fecha_atencion": "date"
+  },
+  "bien_inmueble": {
+    "id_bien_inmueble": "bigint",
+    "id_hogar": "bigint",
+    "tipo": "text",
+    "identificador": "text",
+    "uso_principal": "text",
+    "tenencia": "text",
+    "estado_post_evento": "text",
+    "valor_aproximado": "numeric(18,2)",
+    "tiene_titulo": "text"
+  },
+  "bien_mueble_semoviente": {
+    "id_bien_mueble": "bigint",
+    "id_hogar": "bigint",
+    "descripcion": "text",
+    "cantidad": "integer",
+    "estado_post_evento": "text",
+    "valor_aproximado": "numeric(18,2)",
+    "rescatado": "text",
+    "observacion": "text"
+  },
+  "informacion_economica": {
+    "id_informacion_economica": "bigint",
+    "id_hogar": "bigint",
+    "ingreso_mensual_total_pre_evento": "numeric(18,2)",
+    "ingreso_equivalente_smmlv": "numeric(18,2)",
+    "fuente_principal_ingreso": "text",
+    "continua_recibiendo_ingresos": "text",
+    "meses_sin_ingresos": "integer"
+  },
+  "afectacion_salud": {
+    "id_afectacion_salud": "bigint",
+    "id_hogar": "bigint",
+    "miembro_herido_fallecido": "text",
+    "descripcion_heridos_fallecidos": "text",
+    "enfermedad_cronica": "text",
+    "descripcion_condicion": "text",
+    "afectacion_psicosocial": "text",
+    "atencion_psicosocial": "text",
+    "entidad_atencion": "text"
+  },
+  "territorio_colectivo": {
+    "id_territorio": "bigint",
+    "tipo_territorio": "text",
+    "resolucion_acto": "text"
+  },
+  "comunidad": {
+    "id_comunidad": "bigint",
+    "id_territorio": "bigint",
+    "nombre": "text",
+    "representante_nombre": "text",
+    "representante_cargo": "text",
+    "representante_documento": "text"
+  },
+  "modulo_etnico": {
+    "id_modulo_etnico": "bigint",
+    "id_hogar": "bigint",
+    "id_comunidad": "bigint",
+    "municipio_pdet": "boolean",
+    "relacion_territorial_cultural": "text",
+    "perdida_sitios_sagrados": "text",
+    "descripcion_perdida_cultural": "text",
+    "hogares_desplazados": "integer",
+    "totalidad_comunidad": "boolean",
+    "autoridad_acta_comunicado": "text",
+    "documento_acta": "text",
+    "estado_plan_vida": "text",
+    "amenaza_continuidad_cultural": "text",
+    "descripcion_amenaza": "text"
+  },
+  "seguimiento_etnico": {
+    "id_seguimiento": "bigint",
+    "id_modulo_etnico": "bigint",
+    "entidad_seguimiento": "text",
+    "requiere_interprete": "text",
+    "lengua_interprete": "text",
+    "modulo_ungrd_abierto": "text",
+    "numero_expediente": "text"
+  },
+  "auditoria_registro": {
+    "id_auditoria": "bigint",
+    "id_registro": "uuid",
+    "id_funcionario": "bigint",
+    "version_registro": "integer",
+    "estado": "estado_registro",
+    "snapshot": "jsonb",
+    "creado_en": "timestamptz"
+  }
+}
