@@ -1,16 +1,19 @@
 # Casos de uso
 
-Referencia: [RUDAM_F002_v8.xlsx](RUDAM_F002_v8.xlsx). Modelo de datos: [modelo-ruda-v8.dbml](modelo-ruda-v8.dbml). Verificación funcional: [pruebas-previas-vercel.md](pruebas-previas-vercel.md).
-
 ## Actores y alcance
 
-**Funcionario receptor:** actor principal autenticado que diligencia, consulta y actualiza sus registros. **Declarante:** aporta la información durante la entrevista; no accede directamente al sistema. **Organizaciones de apoyo y seguimiento:** se registran como datos del formulario; el programa no les envía solicitudes ni consulta sistemas externos.
+### Funcionario
+Actor autenticado que diligencia, consulta y actualiza sus registros.
+### Declarante
+Aporta la información durante la entrevista. No accede directamente al sistema.
+### Organizaciones de apoyo y seguimiento
+Se registran como datos del formulario; el programa no les envía solicitudes ni consulta sistemas externos.
 
 El rol administrador está previsto en las cuentas, pero no existe una interfaz de administración de usuarios. Los casos de uso no atribuyen al sistema la expedición de certificaciones, la aprobación de inclusión en RUDA ni la atención humanitaria: el formulario captura información sobre esas actuaciones.
 
 ```mermaid
 flowchart LR
-    F[Funcionario receptor]
+    F[Funcionario]
     D[Declarante]
     subgraph RUDA[Aplicación RUDA v8]
         UC01[Iniciar sesión]
@@ -50,11 +53,3 @@ flowchart LR
 | CU-11 | Consultar historial | Sesión activa y UUID de registro propio | Consultar `GET /api/forms/:id/history` | Lista versiones, estados y fechas. Disponible en API; no se presenta como una pantalla existente |
 | CU-12 | Cerrar sesión | Sesión activa | Solicitar salir; resolver cambios pendientes y finalizar sesión | Se invalida la sesión. Un fallo de guardado pendiente puede impedir la salida hasta que el funcionario lo resuelva |
 | CU-13 | Adjuntar, descargar o retirar acta | Registro propio guardado; para la carga desde el formulario, módulo étnico activo y pregunta 85 en Sí | Seleccionar PDF/PNG/JPG de hasta 4 MB; guardar el archivo; descargarlo o retirarlo cuando corresponda | El archivo persiste en la base y no desaparece al volver a guardar el formulario. Se rechazan archivos de tipo no admitido y acceso desde otro funcionario. Una carga posterior reemplaza el archivo actual |
-
-## Reglas comunes
-
-- La aplicación opera con revisión RUDA 8 y versión de formato 5. La versión del registro aumenta en cada guardado.
-- El segundo apellido es obligatorio al terminar; demás nombres es opcional.
-- Guardar borrador no exige todas las respuestas de cierre. La confirmación de guardado depende de una respuesta exitosa de la API.
-- Datos personales declarados, pertenencia a un hogar y detalles de una captura conservan su contexto histórico aunque la identidad aparezca en otros registros.
-- Las referencias a entidades, actos y certificaciones son información suministrada; no representan integraciones externas implementadas.

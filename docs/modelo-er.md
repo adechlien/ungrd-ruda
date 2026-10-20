@@ -1,14 +1,12 @@
-# Modelo entidad–relación RUDA v8
+# Modelo entidad–relación
 
-Referencia oficial del proyecto: [RUDAM_F002_v8.xlsx](RUDAM_F002_v8.xlsx). Modelo físico: [modelo-ruda-v8.dbml](modelo-ruda-v8.dbml). Casos de uso: [use-cases.md](use-cases.md). Verificación: [pruebas-previas-vercel.md](pruebas-previas-vercel.md).
+`||`: exactamente uno
 
-La revisión RUDA es 8; la versión del formato que aparece en la portada es 5. La versión de un registro es un contador de ediciones y se conserva por separado.
+`o|`: cero o uno
 
-El esquema activo contiene 32 entidades de negocio. `schema_migration` es infraestructura técnica y no forma parte del modelo del formulario. La estructura anterior queda archivada en `ruda_legacy_v7`; no se usa para las nuevas operaciones.
+`o{`: cero o muchos
 
-## Lectura
-
-`||`: exactamente uno. `o|`: cero o uno. `o{`: cero o muchos. Las cardinalidades describen lo que permite la base, incluidos borradores. Para terminar, el contrato del formulario exige sus campos obligatorios y un hogar con integrantes.
+Las cardinalidades describen lo que permite la base, incluidos borradores. Para terminar, el contrato del formulario exige sus campos obligatorios y un hogar con integrantes.
 
 ## Registro, identidad y acceso
 
@@ -161,14 +159,3 @@ erDiagram
 ```
 
 El módulo se diligencia cuando corresponde a una comunidad étnica o a desplazamiento colectivo. Las respuestas incompletas de un borrador se conservan sin inventar nombres de comunidad, representante o territorio para satisfacer claves obligatorias.
-
-## Restricciones y conservación
-
-- UUID único por registro; versión del registro mayor que cero y revisión RUDA fijada en 8.
-- Un usuario por funcionario; correo único en minúsculas y sesiones por token hash.
-- Una fotografía del declarante, observación, desplazamiento, hogar y acta por registro como máximo.
-- Una certificación por desplazamiento; una respuesta por registro y código de pregunta.
-- Un número de formulario RUD no vacío identifica como máximo un hogar; varios hogares pueden no tenerlo.
-- Las dependencias del registro usan borrado en cascada. Personas, eventos y catálogos son entidades compartidas y no se borran al eliminar un registro.
-- Acta: PDF/PNG/JPG, máximo 4 MB, almacenada en `ARCHIVO_REGISTRO`; descarga y modificación restringidas al funcionario propietario. La carga reemplaza el archivo actual del registro.
-- El DBML contiene el diccionario completo; los diagramas muestran atributos seleccionados para facilitar la lectura.
