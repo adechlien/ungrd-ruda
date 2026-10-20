@@ -1,0 +1,8 @@
+* text=auto eol=lf
+# Preserve bytes used by checksums of already applied migrations.
+server/migrations/*.sql -text
+server/migrate-v8.mjs -text
+server/v7-to-v8-keys.json -text
+*.xlsx binary
+*.png binary
+*.svg text eol=lf

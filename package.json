@@ -1,0 +1,48 @@
+{
+  "name": "ruda-web",
+  "version": "0.0.0",
+  "engines": { "node": "24.x" },
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve --host 127.0.0.1 --port 4305 --proxy-config proxy.conf.json",
+    "build": "ng build",
+    "build:vercel": "npm run contract:build && npm run build",
+    "watch": "ng build --watch --configuration development",
+    "test": "npm run test:contract",
+    "contract:build": "node server/build-contract.cjs",
+    "api": "npm run contract:build && node server/index.mjs",
+    "db:migrate": "npm run contract:build && node server/migrate.mjs",
+    "db:seed": "npm run contract:build && node server/seed.mjs",
+    "db:up": "docker compose up -d db",
+    "test:api": "node server/test-program.mjs",
+    "test:predeploy": "npm run build:vercel && node server/test-program.mjs --deployment",
+    "test:contract": "npm run contract:build && node --test server/form-contract.test.mjs server/statistics.test.mjs server/v8-contract.test.mjs"
+  },
+  "private": true,
+  "packageManager": "npm@11.6.2",
+  "dependencies": {
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@angular/platform-browser": "^21.2.0",
+    "@angular/router": "^21.2.0",
+    "@fontsource-variable/nunito-sans": "^5.3.0",
+    "@tabler/icons-angular": "^3.46.0",
+    "@tailwindcss/postcss": "^4.3.3",
+    "colombia-territorial": "^1.1.0",
+    "express": "^5.2.1",
+    "pg": "^8.23.0",
+    "postcss": "^8.5.26",
+    "rxjs": "~7.8.0",
+    "tailwindcss": "^4.3.3",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.21",
+    "@angular/cli": "^21.2.21",
+    "@angular/compiler-cli": "^21.2.0",
+    "prettier": "^3.8.1",
+    "typescript": "~5.9.2"
+  }
+}

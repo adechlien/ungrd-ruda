@@ -1,0 +1,8 @@
+{
+  // Tailwind procesa estas reglas mediante PostCSS; no son reglas CSS nativas.
+  "css.lint.unknownAtRules": "ignore",
+  "tailwindCSS.includeLanguages": {
+    "html": "html",
+    "typescript": "javascript"
+  }
+}
