@@ -1,0 +1,495 @@
+// Modelo oficial del proyecto: RUDAM_F002_v8.xlsx. Revisión 8, formato versión 5.
+// Fuente conservada en docs/referencias. Reglas de obligatoriedad al terminar: form-contract.ts.
+// Ingreso mensual de unidad_productiva está expresado en SMMLV (pregunta 57).
+
+Enum estado_registro {
+  borrador
+  terminado
+}
+
+Enum rol_usuario {
+  funcionario
+  administrador
+}
+
+// Acceso e instituciones
+Table organizacion {
+  id_organizacion bigint [pk, increment]
+  nombre text [not null]
+  tipo text
+}
+
+Table funcionario {
+  id_funcionario bigint [pk, increment]
+  id_organizacion bigint [not null]
+  nombre_completo text [not null]
+  cargo text
+  documento text [not null, unique]
+}
+
+Table usuario {
+  id_usuario bigint [pk, increment]
+  id_funcionario bigint [not null, unique]
+  correo text [not null, unique]
+  password_hash text [not null]
+  rol rol_usuario [not null, default: 'funcionario']
+  activo boolean [not null, default: true]
+}
+
+Table sesion {
+  token_hash text [pk]
+  id_usuario bigint [not null]
+  expira_en timestamptz [not null]
+  creado_en timestamptz [not null, default: `now()`]
+}
+
+// Catálogo territorial
+Table departamento {
+  id_departamento bigint [pk, increment]
+  codigo text [not null, unique]
+  nombre text [not null]
+}
+
+Table municipio {
+  id_municipio bigint [pk, increment]
+  id_departamento bigint [not null]
+  codigo text [unique, note: 'El catálogo existente contiene municipios sin código; no se inventa un código para migrarlos.']
+  nombre text [not null]
+  es_pdet boolean [not null, default: false]
+}
+
+// Catálogo RUDA v8. Tipo de evento corresponde a la pregunta 29 y
+// evento principal a la pregunta 30.
+Table tipo_evento {
+  id_tipo_evento bigint [pk, increment]
+  nombre text [not null, unique]
+}
+
+Table evento_principal {
+  id_evento_principal bigint [pk, increment]
+  id_tipo_evento bigint [not null]
+  nombre text [not null]
+  activo boolean [not null, default: true]
+
+  indexes {
+    (id_tipo_evento, nombre) [unique]
+  }
+}
+
+// Una ocurrencia real compartida por varios registros: evento principal,
+// ubicación y fecha concretas. No se edita desde la pestaña Eventos.
+Table evento_especifico {
+  id_evento_especifico bigint [pk, increment]
+  id_evento_principal bigint
+  id_municipio bigint
+  fecha_inicio date
+  hora_inicio time
+  vereda_barrio_sector text
+  direccion text
+  evolucion text
+  autoridad_alerta text
+  declaratoria_oficial text
+  numero_decreto_calamidad text
+  creado_por bigint [not null]
+  creado_en timestamptz [not null, default: `now()`]
+  actualizado_en timestamptz [not null, default: `now()`]
+
+  Note: 'Preguntas 23 a 34. Varios desplazamientos pueden apuntar a esta misma ocurrencia.'
+}
+
+// Identidad canónica. Los datos tal como fueron declarados se conservan
+// aparte en registro_declarante.
+Table persona {
+  id_persona bigint [pk, increment]
+  tipo_documento text [not null]
+  numero_documento text [not null]
+
+  indexes {
+    (tipo_documento, numero_documento) [unique]
+  }
+}
+
+Table registro {
+  id_registro uuid [pk]
+  id_persona_declarante bigint [not null]
+  id_funcionario bigint [not null]
+  id_organizacion_receptora bigint [not null]
+  id_municipio_declaracion bigint
+  direccion_declaracion text
+  fecha_declaracion date
+  tipo_declaracion text
+  estado estado_registro [not null, default: 'borrador']
+  version_formato smallint [not null, default: 5]
+  revision_ruda smallint [not null, default: 8]
+  version_registro integer [not null, default: 1]
+  creado_en timestamptz [not null, default: `now()`]
+  actualizado_en timestamptz [not null, default: `now()`]
+  terminado_en timestamptz
+
+  Note: 'El UUID corresponde a la pregunta 0. version_formato es 5, como indica la portada; revision_ruda identifica el archivo v8.'
+}
+
+Table registro_declarante {
+  id_registro uuid [pk]
+  primer_apellido text
+  segundo_apellido text
+  primer_nombre text
+  demas_nombres text
+  fecha_nacimiento date
+  sexo text
+  direccion_residencia text
+  barrio_vereda_residencia text
+  id_municipio_residencia bigint
+  telefono text
+  correo_electronico text
+
+  Note: 'Fotografía histórica de las respuestas 1 a 14 en este registro.'
+}
+
+// Un registro terminado tiene exactamente un desplazamiento. En borrador,
+// la relación y sus campos pueden estar incompletos.
+Table desplazamiento {
+  id_desplazamiento bigint [pk, increment]
+  id_registro uuid [not null, unique]
+  id_evento_especifico bigint
+  fecha_salida date
+  hora_salida time
+  id_municipio_origen bigint
+  vereda_barrio_sector_origen text
+  direccion_origen text
+  momento_salida text
+  caracter_salida text
+  tipo_alojamiento_actual text [note: 'Incluye Hotel en v8.']
+  id_municipio_actual bigint
+  vereda_barrio_sector_actual text
+  direccion_actual text
+  razon_no_retorno text
+
+  Note: 'Preguntas 39 a 52 de v8. Ya no incluye permanece_fuera, puede_retornar ni condicion_riesgo_origen.'
+}
+
+Table certificacion_desplazamiento {
+  id_certificacion bigint [pk, increment]
+  id_desplazamiento bigint [not null, unique]
+  fecha_solicitud date
+  fecha_emision date
+  entidad_apoyo text
+  otra_entidad text
+
+  Note: 'Preguntas 35 a 38 de v8. La relación causal corresponde al desplazamiento declarado.'
+}
+
+Table observacion_registro {
+  id_registro uuid [pk]
+  observacion text
+}
+
+Table pregunta_guia {
+  codigo text [pk]
+  grupo_evento text [not null]
+  revision_ruda smallint [not null, default: 8]
+  texto text [not null]
+  orden integer [not null]
+
+  indexes {
+    (grupo_evento, revision_ruda, orden) [unique]
+  }
+}
+
+Table respuesta_guia {
+  id_respuesta bigint [pk, increment]
+  id_registro uuid [not null]
+  codigo_pregunta text [not null]
+  respuesta text
+
+  indexes {
+    (id_registro, codigo_pregunta) [unique]
+  }
+}
+
+// Hogar y caracterización
+Table hogar {
+  id_hogar bigint [pk, increment]
+  id_registro uuid [not null, unique]
+  numero_formulario_rud text [unique, note: 'Pregunta 53, si aplica.']
+}
+
+Table miembro_hogar {
+  id_miembro_hogar bigint [pk, increment]
+  id_hogar bigint [not null]
+  numero_orden smallint [not null]
+  apellidos_nombres text
+  tipo_documento text
+  numero_documento text
+  fecha_nacimiento date
+  genero text
+  estado_civil text
+  ocupacion_previa text
+  lugar_ocupacion_previa text
+  escolaridad text
+  lugar_inscripcion_cedula text
+  cedula_inscrita_votar text
+  estudiaba text
+  lugar_estudio text
+  trabajaba text
+  lugar_trabajo_empleador text
+  nivel_sisben text
+  eps_salud text
+  relacion_declarante text
+  etnia text
+  discapacidad text
+  gestante_lactante boolean
+  mujer_cabeza_familia boolean
+
+  indexes {
+    (id_hogar, numero_orden) [unique]
+  }
+}
+
+Table animal_domestico {
+  id_animal bigint [pk, increment]
+  id_hogar bigint [not null]
+  especie text
+  cantidad integer
+  condicion_actual text
+  requiere_atencion_veterinaria text
+  observaciones text
+}
+
+Table unidad_productiva {
+  id_unidad_productiva bigint [pk, increment]
+  id_hogar bigint [not null, unique]
+  tiene_unidad_productiva text
+  tipo text
+  tenencia text
+  ingreso_mensual_pre_evento numeric(18,2)
+  puede_operar_actualmente text
+  empleados_no_familiares integer
+  empleados_afectados text
+  tiene_licencia_ambiental text
+  numero_licencia text
+
+  Note: 'Preguntas 54 a 60.'
+}
+
+Table necesidad_basica {
+  id_necesidad bigint [pk, increment]
+  id_hogar bigint [not null, unique]
+  alimentacion text
+  agua_potable text
+  refugio_alojamiento text
+  vivienda_origen text
+  vestimenta_enceres text
+  atencion_medica text
+  entidad_atencion_medica text
+  acceso_educacion text
+  saneamiento_basico text
+  atencion_humanitaria text
+  entidad_atencion_humanitaria text
+  fecha_atencion date
+
+  Note: 'Preguntas 61 a 69.'
+}
+
+// Bienes, ingresos y salud
+Table bien_inmueble {
+  id_bien_inmueble bigint [pk, increment]
+  id_hogar bigint [not null]
+  tipo text
+  identificador text
+  uso_principal text
+  tenencia text
+  estado_post_evento text
+  valor_aproximado numeric(18,2)
+  tiene_titulo text
+
+  Note: 'v8 usa Identificador y elimina Puede retornar.'
+}
+
+Table bien_mueble_semoviente {
+  id_bien_mueble bigint [pk, increment]
+  id_hogar bigint [not null]
+  descripcion text
+  cantidad integer
+  estado_post_evento text
+  valor_aproximado numeric(18,2)
+  rescatado text
+  observacion text
+}
+
+Table informacion_economica {
+  id_informacion_economica bigint [pk, increment]
+  id_hogar bigint [not null, unique]
+  ingreso_mensual_total_pre_evento numeric(18,2)
+  ingreso_equivalente_smmlv numeric(18,2)
+  fuente_principal_ingreso text
+  continua_recibiendo_ingresos text
+  meses_sin_ingresos integer
+
+  Note: 'Preguntas 70 a 72. v8 elimina deudas y soberanía alimentaria de esta sección.'
+}
+
+Table afectacion_salud {
+  id_afectacion_salud bigint [pk, increment]
+  id_hogar bigint [not null, unique]
+  miembro_herido_fallecido text
+  descripcion_heridos_fallecidos text
+  enfermedad_cronica text
+  descripcion_condicion text
+  afectacion_psicosocial text
+  atencion_psicosocial text
+  entidad_atencion text
+
+  Note: 'Preguntas 73 a 76.'
+}
+
+// Módulo étnico-colectivo
+Table territorio_colectivo {
+  id_territorio bigint [pk, increment]
+  tipo_territorio text [not null]
+  resolucion_acto text
+}
+
+Table comunidad {
+  id_comunidad bigint [pk, increment]
+  id_territorio bigint
+  nombre text [not null]
+  representante_nombre text [not null]
+  representante_cargo text
+  representante_documento text
+}
+
+Table modulo_etnico {
+  id_modulo_etnico bigint [pk, increment]
+  id_hogar bigint [not null, unique]
+  id_comunidad bigint [not null]
+  municipio_pdet boolean
+  relacion_territorial_cultural text
+  perdida_sitios_sagrados text
+  descripcion_perdida_cultural text
+  hogares_desplazados integer
+  totalidad_comunidad boolean
+  autoridad_acta_comunicado text
+  documento_acta text
+  estado_plan_vida text
+  amenaza_continuidad_cultural text
+  descripcion_amenaza text
+
+  Note: 'Preguntas 77 a 87.'
+}
+
+Table seguimiento_etnico {
+  id_seguimiento bigint [pk, increment]
+  id_modulo_etnico bigint [not null, unique]
+  entidad_seguimiento text
+  requiere_interprete text
+  lengua_interprete text
+  modulo_ungrd_abierto text
+  numero_expediente text
+
+  Note: 'Preguntas 88 a 90. v8 ya no incluye consulta previa.'
+}
+
+// Auditoría: conserva la fotografía completa de cada versión sin duplicar
+// JSON mutable en las tablas operativas.
+Table auditoria_registro {
+  id_auditoria bigint [pk, increment]
+  id_registro uuid [not null]
+  id_funcionario bigint [not null]
+  version_registro integer [not null]
+  estado estado_registro [not null]
+  snapshot jsonb [not null]
+  creado_en timestamptz [not null, default: `now()`]
+
+  indexes {
+    (id_registro, version_registro) [unique]
+  }
+}
+
+Ref: funcionario.id_organizacion > organizacion.id_organizacion
+Ref: usuario.id_funcionario > funcionario.id_funcionario
+Ref: sesion.id_usuario > usuario.id_usuario
+Ref: municipio.id_departamento > departamento.id_departamento
+Ref: evento_principal.id_tipo_evento > tipo_evento.id_tipo_evento
+Ref: evento_especifico.id_evento_principal > evento_principal.id_evento_principal
+Ref: evento_especifico.id_municipio > municipio.id_municipio
+Ref: evento_especifico.creado_por > funcionario.id_funcionario
+Ref: registro.id_persona_declarante > persona.id_persona
+Ref: registro.id_funcionario > funcionario.id_funcionario
+Ref: registro.id_organizacion_receptora > organizacion.id_organizacion
+Ref: registro.id_municipio_declaracion > municipio.id_municipio
+Ref: registro_declarante.id_registro - registro.id_registro [delete: cascade]
+Ref: registro_declarante.id_municipio_residencia > municipio.id_municipio
+Ref: desplazamiento.id_registro - registro.id_registro [delete: cascade]
+Ref: desplazamiento.id_evento_especifico > evento_especifico.id_evento_especifico
+Ref: desplazamiento.id_municipio_origen > municipio.id_municipio
+Ref: desplazamiento.id_municipio_actual > municipio.id_municipio
+Ref: certificacion_desplazamiento.id_desplazamiento - desplazamiento.id_desplazamiento [delete: cascade]
+Ref: observacion_registro.id_registro - registro.id_registro [delete: cascade]
+Ref: respuesta_guia.id_registro > registro.id_registro [delete: cascade]
+Ref: respuesta_guia.codigo_pregunta > pregunta_guia.codigo
+Ref: hogar.id_registro - registro.id_registro [delete: cascade]
+Ref: miembro_hogar.id_hogar > hogar.id_hogar [delete: cascade]
+Ref: animal_domestico.id_hogar > hogar.id_hogar [delete: cascade]
+Ref: unidad_productiva.id_hogar - hogar.id_hogar [delete: cascade]
+Ref: necesidad_basica.id_hogar - hogar.id_hogar [delete: cascade]
+Ref: bien_inmueble.id_hogar > hogar.id_hogar [delete: cascade]
+Ref: bien_mueble_semoviente.id_hogar > hogar.id_hogar [delete: cascade]
+Ref: informacion_economica.id_hogar - hogar.id_hogar [delete: cascade]
+Ref: afectacion_salud.id_hogar - hogar.id_hogar [delete: cascade]
+Ref: comunidad.id_territorio > territorio_colectivo.id_territorio
+Ref: modulo_etnico.id_hogar - hogar.id_hogar [delete: cascade]
+Ref: modulo_etnico.id_comunidad > comunidad.id_comunidad
+Ref: seguimiento_etnico.id_modulo_etnico - modulo_etnico.id_modulo_etnico [delete: cascade]
+Ref: auditoria_registro.id_registro > registro.id_registro [delete: cascade]
+Ref: auditoria_registro.id_funcionario > funcionario.id_funcionario
+
+// Pregunta 85 del Excel: archivo del acta/comunicado, confirmado por el usuario.
+// Almacenamiento de demo: PDF/PNG/JPG, máximo 4 MB; acceso por funcionario propietario.
+Table archivo_registro {
+  id_archivo uuid [pk]
+  id_registro uuid [not null, unique]
+  nombre text [not null]
+  mime text [not null]
+  contenido bytea [not null]
+  creado_en timestamptz [not null, default: `now()`]
+}
+Ref: archivo_registro.id_registro - registro.id_registro [delete: cascade]
+
+TableGroup acceso {
+  organizacion
+  funcionario
+  usuario
+  sesion
+}
+
+TableGroup eventos_y_registros {
+  tipo_evento
+  evento_principal
+  evento_especifico
+  persona
+  registro
+  registro_declarante
+  desplazamiento
+  certificacion_desplazamiento
+  observacion_registro
+}
+
+TableGroup hogar_y_afectaciones {
+  hogar
+  miembro_hogar
+  animal_domestico
+  unidad_productiva
+  necesidad_basica
+  bien_inmueble
+  bien_mueble_semoviente
+  informacion_economica
+  afectacion_salud
+}
+
+TableGroup etnico_colectivo {
+  territorio_colectivo
+  comunidad
+  modulo_etnico
+  seguimiento_etnico
+}
