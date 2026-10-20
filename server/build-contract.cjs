@@ -1,0 +1,1 @@
+const esbuild=require('esbuild');require('fs').mkdirSync('server/generated',{recursive:true});esbuild.buildSync({entryPoints:['src/app/form-contract.ts'],outfile:'server/generated/contract.mjs',bundle:true,platform:'node',format:'esm'});
