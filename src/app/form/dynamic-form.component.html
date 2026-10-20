@@ -1,0 +1,129 @@
+<!-- Plantilla dinámica: usa @if, @for y @switch para construir cada sección a partir del esquema recibido. -->
+<app-form-section-layout [recordId]="recordId" [recordSummary]="recordSummary" (coverRequested)="coverRequested.emit()" [canFinish]="canFinish" [title]="schema?.title || ''" [subtitle]="schema?.subtitle || ''" [activeSection]="activeSection" [lastSavedAt]="lastSavedAt" [progress]="progress" (sectionChange)="sectionChange.emit($event)" (saveRequested)="saveRequested.emit()" (finishRequested)="finishRequested.emit()" (partialFillRequested)="partialFillRequested.emit()" (completeFillRequested)="completeFillRequested.emit()">
+  @if (activeSection === 2) {
+    <section class="my-8">
+      <label for="shared-event" class="mb-4.5 flex items-center gap-2 text-xl font-bold text-brand-purple max-sm:text-2xl">Evento asociado a esta declaración</label>
+      <app-custom-select controlId="shared-event" [options]="sharedEventOptions" [optionIcons]="sharedEventIcons" [value]="selectedSharedEventLabel" placeholder="Registrar un evento nuevo" (valueChange)="chooseSharedEvent($event)" />
+    </section>
+  }
+  @if (activeSection === 6) {
+    <section class="my-8 rounded-lg bg-surface-muted p-4">
+      <div class="flex items-center justify-between gap-4">
+        <strong id="ethnic-condition-label" class="text-sm text-brand-navy">¿El declarante pertenece a una comunidad étnica o el desplazamiento es colectivo?</strong>
+        <div class="flex shrink-0 items-center gap-2">
+          <span class="text-xs font-semibold text-brand-navy">{{ ethnicApplies ? 'Sí' : 'No' }}</span>
+          <button id="ethnic-applies" type="button" role="switch" aria-labelledby="ethnic-condition-label" aria-describedby="ethnic-condition-hint" [attr.aria-checked]="ethnicApplies" class="relative h-6 w-11 rounded-full bg-section-track p-1 transition-colors focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-brand-purple [&.active]:bg-brand-purple" [class.active]="ethnicApplies" (click)="ethnicChange.emit(ethnicApplies ? 'No' : 'Sí')">
+            <span class="block size-4 rounded-full bg-white shadow-sm transition-transform motion-reduce:transition-none" [class.translate-x-5]="ethnicApplies"></span>
+          </button>
+        </div>
+      </div>
+      <p id="ethnic-condition-hint" class="mb-0 mt-2 text-xs text-secondary">Desplazamiento colectivo: 3 o más hogares de una misma comunidad. Si no se cumple la condición, las preguntas permanecen visibles, deshabilitadas y no cuentan para el progreso.</p>
+      @if (ethnicApplies && answers['section-6-85'] === 'Sí') {
+        <div class="mt-5 border-t border-border-soft pt-4">
+          <label class="mb-2 block text-sm font-semibold text-brand-navy" for="acta-file">Acta o comunicado de las autoridades propias</label>
+          <input id="acta-file" type="file" accept="application/pdf,image/png,image/jpeg" [disabled]="uploadingActa" (change)="selectActa($event)" class="block w-full text-sm disabled:opacity-50" />
+          <p class="mt-2 text-xs text-secondary">PDF, PNG o JPG. Máximo 4 MB. @if (uploadingActa) { Guardando archivo… }</p>
+          @if (acta) {
+            <div class="mt-3 flex flex-wrap items-center gap-3 text-sm">
+              <a class="text-brand-purple underline" [href]="'/api/forms/' + recordId + '/acta'">Descargar {{ acta.nombre }}</a>
+              <button type="button" class="rounded px-3 py-1 text-danger hover:bg-danger-soft disabled:opacity-50" [disabled]="uploadingActa" (click)="actaRemoved.emit()">Eliminar archivo</button>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  }
+  <!-- La sección 3 tiene una interfaz especial; las demás se construyen con el esquema. -->
+  @if (activeSection === 3) {
+    <h2 class="mb-4 flex items-center gap-2 text-xl font-bold text-brand-purple">I. Narración libre del declarante <span class="info-tooltip relative inline-grid w-5 h-5 place-items-center text-brand-navy cursor-help after:[content:attr(data-tooltip)] after:absolute after:z-20 after:left-[50%] after:bottom-[calc(100%_+_19px)] after:w-[min(420px,_75vw)] after:rounded-lg after:bg-tooltip after:text-surface after:text-[14px] after:leading-[1.4] after:font-normal after:opacity-0 after:pointer-events-none after:[transform:translate(-50%,_6px)] after:[transition:.15s_ease] after:shadow-tooltip after:py-[11px] after:px-[13px] before:[content:''] before:absolute before:z-21 before:left-[50%] before:bottom-[calc(100%_+_5px)] before:border-solid before:border-t-tooltip before:border-r-transparent before:border-b-transparent before:border-l-transparent before:opacity-0 before:[transform:translateX(-50%)] before:[transition:.15s_ease] before:border-[7px] hover:after:opacity-100 hover:after:[transform:translate(-50%,_0)] hover:before:opacity-100 focus:after:opacity-100 focus:after:[transform:translate(-50%,_0)] focus:before:opacity-100" tabindex="0" data-tooltip="Espacio para narración libre: qué ocurrió, cuándo inició, si fue súbito o gradual (Art. 2 Ley 2577), si hubo aviso/evacuación previa, impacto sobre hogar, medios de vida y animales"><tabler-icon icon="info-circle" [size]="20" /></span></h2>
+    <div class="flex h-56 flex-col overflow-hidden rounded-xl border border-form-border max-sm:h-72"><label for="story" class="sr-only">Narración libre del declarante</label><textarea class="min-h-0 w-full flex-1 resize-none border-0 px-4 py-3 text-sm leading-snug text-ink outline-none placeholder:text-placeholder" id="story" [ngModel]="story" (ngModelChange)="storyChange.emit($event)" placeholder="Espacio para narración libre: qué ocurrió, cuándo inició, si fue súbito o gradual (Art. 2 Ley 2577), si hubo aviso/evacuación previa, impacto sobre hogar, medios de vida y animales"></textarea><div class="flex min-h-8 items-center justify-between border-t border-divider bg-surface px-3 text-xs text-placeholder"><span>{{ story.length }} caracteres</span><span>Narración obligatoria</span></div></div>
+    <h2 class="mb-4 mt-14 flex items-center gap-2 text-xl font-bold text-brand-purple">II. Preguntas guía por tipo de evento <span class="info-tooltip relative inline-grid w-5 h-5 place-items-center text-brand-navy cursor-help after:[content:attr(data-tooltip)] after:absolute after:z-20 after:left-[50%] after:bottom-[calc(100%_+_19px)] after:w-[min(420px,_75vw)] after:rounded-lg after:bg-tooltip after:text-surface after:text-[14px] after:leading-[1.4] after:font-normal after:opacity-0 after:pointer-events-none after:[transform:translate(-50%,_6px)] after:[transition:.15s_ease] after:shadow-tooltip after:py-[11px] after:px-[13px] before:[content:''] before:absolute before:z-21 before:left-[50%] before:bottom-[calc(100%_+_5px)] before:border-solid before:border-t-tooltip before:border-r-transparent before:border-b-transparent before:border-l-transparent before:opacity-0 before:[transform:translateX(-50%)] before:[transition:.15s_ease] before:border-[7px] hover:after:opacity-100 hover:after:[transform:translate(-50%,_0)] hover:before:opacity-100 focus:after:opacity-100 focus:after:[transform:translate(-50%,_0)] focus:before:opacity-100" tabindex="0" data-tooltip="Seleccione el tipo de evento para mostrar las preguntas guía específicas. Las respuestas permiten precisar las circunstancias, afectaciones y evolución del evento."><tabler-icon icon="info-circle" [size]="20" /></span></h2>
+    <div class="flex items-start gap-3 rounded-xl bg-surface-muted p-4 text-sm text-brand-navy"><span class="grid size-9 shrink-0 place-items-center rounded-lg bg-surface text-brand-purple"><tabler-icon [icon]="eventTypeIcon(answers['section-2-29'])" [size]="21" /></span><div><strong>{{ selectedEventOption.label }}</strong><p class="mt-1 text-xs">Las preguntas corresponden al tipo de evento indicado en la sección Evento.</p></div></div>
+    <div class="mt-4 space-y-4">@for (question of selectedQuestions; track question; let i = $index) {
+      <div class="group/field min-w-0 pt-2 [&_.outlined-control]:h-13 [&_.outlined-control]:rounded-[10px] [&_.outlined-control]:px-4.5 [&_.outlined-control:has(>input)]:px-0 [&_.outlined-control>input]:px-4.5"><label class="relative z-1 -my-2 ml-3.5 flex min-h-0 w-fit max-w-[calc(100%-32px)] items-center gap-1 bg-surface px-[5px] text-xs leading-4 font-normal text-brand-navy [overflow-wrap:anywhere] group-focus-within/field:text-brand-purple" [for]="'question-' + i">{{ question }}</label><textarea class="min-h-20 w-full rounded-[10px] border border-form-border px-4.5 pt-4 pb-3 text-sm outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-1" [id]="'question-' + i" [ngModel]="answers[answerKey(i)] || ''" (ngModelChange)="answerChange.emit({index:i,value:$event})" placeholder="Describa la respuesta del declarante"></textarea></div>
+    }</div>
+  } @else {
+      <!-- @for repite grupos y track ayuda a Angular a reutilizar nodos del DOM. -->
+      @for (group of schema?.groups; track group.title) {
+        <fieldset class="mt-8 min-w-0 first:mt-7" [disabled]="activeSection === 6 && !ethnicApplies" [class.opacity-60]="activeSection === 6 && !ethnicApplies">
+          <h2 class="mb-4.5 flex items-center gap-2 text-xl font-bold text-brand-purple max-sm:text-2xl">{{ group.title }} <span class="info-tooltip relative inline-grid w-5 h-5 place-items-center text-brand-navy cursor-help after:[content:attr(data-tooltip)] after:absolute after:z-20 after:left-[50%] after:bottom-[calc(100%_+_19px)] after:w-[min(420px,_75vw)] after:rounded-lg after:bg-tooltip after:text-surface after:text-[14px] after:leading-[1.4] after:font-normal after:opacity-0 after:pointer-events-none after:[transform:translate(-50%,_6px)] after:[transition:.15s_ease] after:shadow-tooltip after:py-[11px] after:px-[13px] before:[content:''] before:absolute before:z-21 before:left-[50%] before:bottom-[calc(100%_+_5px)] before:border-solid before:border-t-tooltip before:border-r-transparent before:border-b-transparent before:border-l-transparent before:opacity-0 before:[transform:translateX(-50%)] before:[transition:.15s_ease] before:border-[7px] hover:after:opacity-100 hover:after:[transform:translate(-50%,_0)] hover:before:opacity-100 focus:after:opacity-100 focus:after:[transform:translate(-50%,_0)] focus:before:opacity-100" tabindex="0" [attr.data-tooltip]="group.description || 'Complete la información correspondiente a ' + group.title.toLowerCase() + '.'"><tabler-icon icon="info-circle" [size]="20" /></span></h2>
+          @if (group.description) { <p class="mb-4.5 mt-[-8px] text-sm leading-[1.45] text-muted">{{ group.description }}</p> }
+          @if (group.title === 'Miembros del hogar') {
+            @if (members().length) {
+              <div class="grid grid-cols-2 gap-2 max-sm:grid-cols-1">
+                @for (member of members(); track $index) {
+                  <button type="button" class="group flex w-full items-center gap-2 rounded-lg border border-border-soft bg-surface-card px-3 py-2 text-left transition-colors hover:border-brand-purple hover:bg-surface-card-hover focus:outline-none focus:ring-2 focus:ring-brand-purple/20" aria-label="Editar {{ member['member-name'] }}" (click)="editMember($index)">
+                    <span class="grid size-8 shrink-0 place-items-center bg-transparent" [class.text-gender-male]="member['member-gender'] === 'Masculino'" [class.text-gender-female]="member['member-gender'] === 'Femenino'" [class.text-gender-neutral]="member['member-gender'] === 'Prefiere no responder'" [class.text-gender-diverse]="member['member-gender'] !== 'Masculino' && member['member-gender'] !== 'Femenino' && member['member-gender'] !== 'Prefiere no responder'"><tabler-icon [icon]="genderIcon(member['member-gender'])" [size]="22" /></span>
+                    <div class="min-w-0 flex-1"><strong class="flex min-w-0 max-w-full items-center gap-1.5 text-base text-brand-navy"><span class="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">{{ member['member-name'] }}</span><span class="shrink-0 text-sm font-normal text-muted">{{ memberAge(member) }}</span></strong>
+                      @if (memberNeedsCompletion(member)) { <span class="mt-1 inline-flex items-center gap-1 rounded bg-warning-soft px-1.5 py-0.5 text-xs font-semibold text-warning"><tabler-icon icon="alert-triangle" [size]="13" /> Completar datos</span> }
+                    </div>
+                    <span class="ml-auto grid size-8 shrink-0 place-items-center rounded-lg text-brand-navy opacity-0 transition-opacity group-hover:opacity-100 group-focus:opacity-100"><tabler-icon icon="edit" [size]="18" /></span>
+                  </button>
+                }
+              </div>
+            }
+            <div class="mt-4 flex items-center justify-between gap-4"><button type="button" class="flex items-center gap-2 rounded-lg bg-brand-purple px-4 py-2 text-sm font-semibold text-surface hover:bg-brand-navy focus:outline-none focus:ring-3 focus:ring-brand-purple/20" (click)="openMemberModal()"><tabler-icon icon="plus" [size]="20" /> Añadir miembro</button><div class="text-right text-sm font-semibold text-brand-navy">{{ members().length }} {{ members().length === 1 ? 'miembro' : 'miembros' }}</div></div>
+          } @else {
+          <div class="grid grid-cols-2 gap-x-4 gap-y-4.5 max-sm:grid-cols-1">
+            @for (field of groupFields(group); track field.id) {
+              <div class="group/field min-w-0 pt-2 [&_.outlined-control]:h-13 [&_.outlined-control]:rounded-[10px] [&_.outlined-control]:px-4.5 [&_.outlined-control:has(>input)]:px-0 [&_.outlined-control>input]:px-4.5 [&:has([role=combobox]:disabled)>label]:bg-[linear-gradient(to_bottom,var(--color-surface)_50%,var(--color-surface-disabled)_50%)]" [class.col-span-full]="field.type === 'textarea' || (activeSection === 1 && field.id === '0')">
+                @if (!(activeSection === 1 && field.id === '0')) {
+                <label class="relative z-1 -my-2 ml-3.5 flex min-h-0 w-fit max-w-[calc(100%-32px)] items-center gap-1 bg-surface px-[5px] text-xs leading-4 font-normal text-brand-navy [overflow-wrap:anywhere] group-focus-within/field:text-brand-purple" [for]="'field-' + activeSection + '-' + field.id"><span>{{ field.id.match('^\\d+$') ? field.id + '. ' : '' }}{{ field.label }} @if (field.required) { <span class="text-danger-required">*</span> }</span>@if (activeSection === 6 && field.id === '80') { <span class="info-tooltip shrink-0 relative inline-grid w-5 h-5 place-items-center text-brand-navy cursor-help after:[content:attr(data-tooltip)] after:absolute after:z-20 after:left-[50%] after:bottom-[calc(100%_+_19px)] after:w-[min(420px,_75vw)] after:rounded-lg after:bg-tooltip after:text-surface after:text-[14px] after:leading-[1.4] after:font-normal after:opacity-0 after:pointer-events-none after:[transform:translate(-50%,_6px)] after:[transition:.15s_ease] after:shadow-tooltip after:py-[11px] after:px-[13px] before:[content:''] before:absolute before:z-21 before:left-[50%] before:bottom-[calc(100%_+_5px)] before:border-solid before:border-t-tooltip before:border-r-transparent before:border-b-transparent before:border-l-transparent before:opacity-0 before:[transform:translateX(-50%)] before:[transition:.15s_ease] before:border-[7px] hover:after:opacity-100 hover:after:[transform:translate(-50%,_0)] hover:before:opacity-100 focus:after:opacity-100 focus:after:[transform:translate(-50%,_0)] focus:before:opacity-100" tabindex="0" data-tooltip="PDET significa Programa de Desarrollo con Enfoque Territorial. Es una estrategia para transformar los municipios más afectados por el conflicto armado, la pobreza, las economías ilícitas y la debilidad institucional."><tabler-icon icon="info-circle" [size]="18" /></span> }</label>
+                }
+                <!-- @switch elige el componente correcto según el tipo declarado en form-schema.ts. -->
+                @switch (field.type) {
+                  @case ('select') { <app-custom-select class="block min-w-0" [controlId]="'field-' + activeSection + '-' + field.id" [options]="fieldOptions(field.id, field.options || [])" [optionIcons]="fieldOptionIcons(field.id)" [value]="answers[fieldKey(field.id)] || ''" [disabled]="isMunicipalityDisabled(field.id)" [placeholder]="activeSection === 2 && field.id === '30' && isMunicipalityDisabled(field.id) ? 'Seleccione primero el tipo de evento' : isMunicipalityDisabled(field.id) ? 'Seleccione primero un departamento' : 'Seleccione una opción'" (valueChange)="setValue(field.id, $event)" /> }
+                  @case ('date') { <app-custom-date-picker class="block min-w-0" [controlId]="'field-' + activeSection + '-' + field.id" [value]="answers[fieldKey(field.id)] || ''" (valueChange)="setValue(field.id, $event)" /> }
+                  @case ('time') { <app-custom-time-picker class="block min-w-0" [controlId]="'field-' + activeSection + '-' + field.id" [value]="answers[fieldKey(field.id)] || ''" (valueChange)="setValue(field.id, $event)" /> }
+                  @case ('textarea') { <textarea class="min-h-25 w-full resize-y rounded-[10px] border border-form-border bg-surface px-4.5 pt-4 pb-3 text-sm text-ink outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-1 placeholder:text-placeholder" rows="4" [placeholder]="placeholder(field)" [id]="'field-' + activeSection + '-' + field.id" [readonly]="activeSection === 1 && ['0','19','20'].includes(field.id)" [ngModel]="answers[fieldKey(field.id)] || ''" (ngModelChange)="setValue(field.id, $event)"></textarea> }
+                  @default { <input class="h-13 w-full rounded-[10px] border border-form-border bg-surface px-4.5 py-3 text-sm text-ink outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-1 placeholder:text-placeholder disabled:cursor-not-allowed disabled:border-border-disabled disabled:bg-surface-disabled disabled:text-placeholder" [class.border-danger-border]="!!documentError(field.id)" [attr.aria-label]="activeSection === 1 && field.id === '0' ? field.label : null" [type]="field.type" [placeholder]="placeholder(field)" [attr.inputmode]="documentInputMode(field.id)" [disabled]="activeSection === 1 && field.id === '0'" [readonly]="activeSection === 1 && ['19','20'].includes(field.id)" [id]="'field-' + activeSection + '-' + field.id" [ngModel]="answers[fieldKey(field.id)] || ''" (ngModelChange)="setValue(field.id, $event)" /> }
+                }
+                @if (documentError(field.id)) { <small class="mt-1 block text-xs leading-tight text-danger">{{ documentError(field.id) }}</small> }
+                @if (field.hint) { <small class="mt-1 block text-xs text-placeholder">{{ field.hint }}</small> }
+              </div>
+            }
+          </div>
+          }
+          @if (repeatable(group)) {
+            <div class="mt-4 flex flex-wrap gap-3 text-sm">
+              <button type="button" class="rounded-lg bg-surface-muted px-4 py-2 text-brand-navy hover:bg-surface-selected" (click)="addRepeatedRow(group)">Añadir otro registro</button>
+              @for (row of repeatedRows(group); track row) {
+                <button type="button" class="rounded-lg px-3 py-2 text-danger hover:bg-danger-soft" (click)="removeRepeatedRow(group,row)">Eliminar registro {{ row }}</button>
+              }
+            </div>
+          }
+        </fieldset>
+      }
+  }
+</app-form-section-layout>
+
+@if (memberModalOpen()) {
+  <div class="fixed inset-0 z-50 grid place-items-center overflow-hidden bg-overlay p-6" (click)="memberModalOpen.set(false)">
+    <section class="relative max-h-[90vh] w-full max-w-5xl overflow-visible rounded-xl bg-surface p-6 shadow-dialog max-md:overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="member-modal-title" (click)="$event.stopPropagation()" (keydown.enter)="handleMemberEnter($event)">
+      <button type="button" class="absolute right-4 top-4 grid size-9 place-items-center rounded-lg text-muted hover:bg-surface-muted" aria-label="Cerrar" (click)="memberModalOpen.set(false)"><tabler-icon icon="x" [size]="24" /></button>
+      <h2 id="member-modal-title" class="m-0 text-2xl font-bold text-brand-navy">{{ editingMemberIndex() === null ? 'Añadir miembro del hogar' : memberNeedsCompletion(memberDraft()) ? 'Completar datos del declarante' : 'Editar miembro del hogar' }}</h2>
+      @if (memberNeedsCompletion(memberDraft())) { <p class="mb-0 mt-2 text-sm text-warning">Se incluyeron los datos de la declaración. Complete la información del hogar y guarde los cambios para terminar esta ficha.</p> }
+      <p class="mb-6 mt-2 text-sm text-muted">Complete la información del integrante. Al añadirlo se mostrará un resumen en la sección.</p>
+      <div class="grid grid-cols-3 gap-4 max-md:grid-cols-2 max-sm:grid-cols-1">
+        @for (field of memberFields; track field.id) {
+          <div class="group/field min-w-0 pt-2 [&_.outlined-control]:h-13 [&_.outlined-control]:rounded-[10px] [&_.outlined-control]:px-4.5 [&_.outlined-control:has(>input)]:px-0 [&_.outlined-control>input]:px-4.5">
+            <label class="relative z-1 -my-2 ml-3.5 flex min-h-0 w-fit max-w-[calc(100%-32px)] items-center gap-1 bg-surface px-[5px] text-xs leading-4 font-normal text-brand-navy [overflow-wrap:anywhere] group-focus-within/field:text-brand-purple" [for]="'member-' + field.id">{{ field.label }} @if (field.required) { <span class="text-danger-required">*</span> }</label>
+            @switch (field.type) {
+              @case ('select') { <app-custom-select [controlId]="'member-' + field.id" [options]="field.options || []" [value]="memberDraft()[field.id] || ''" (valueChange)="setMemberValue(field.id, $event)" /> }
+              @case ('date') { <app-custom-date-picker [controlId]="'member-' + field.id" [value]="memberDraft()[field.id] || ''" (valueChange)="setMemberValue(field.id, $event)" /> }
+              @default { <input class="h-13 w-full rounded-[10px] border border-form-border bg-surface px-4.5 py-3 text-sm text-ink outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-1 placeholder:text-placeholder" [id]="'member-' + field.id" [attr.aria-label]="activeSection === 1 && field.id === '0' ? field.label : null" [type]="field.type" [placeholder]="placeholder(field)" [ngModel]="memberDraft()[field.id] || ''" (ngModelChange)="setMemberValue(field.id, $event)" /> }
+            }
+          </div>
+        }
+      </div>
+      <div class="mt-6 flex justify-end gap-3 border-t border-divider pt-4"><button type="button" class="rounded-lg border border-form-border px-4 py-2 text-sm text-body" (click)="memberModalOpen.set(false)">Cancelar</button><button type="button" class="flex items-center gap-2 rounded-lg bg-brand-purple px-4 py-2 text-sm font-semibold text-surface disabled:cursor-not-allowed disabled:opacity-50" [disabled]="!memberDraft()['member-name']?.trim()" (click)="addMember()"><tabler-icon [icon]="editingMemberIndex() === null ? 'plus' : 'device-floppy'" [size]="19" /> {{ editingMemberIndex() === null ? 'Añadir' : 'Guardar cambios' }}</button></div>
+    </section>
+  </div>
+}
+
+@if (toast(); as notification) {
+  <div class="fixed bottom-6 right-6 z-[70] flex max-w-sm items-start gap-3 rounded-xl px-4 py-3 text-sm shadow-toast" [class.bg-success-soft]="notification.type === 'success'" [class.text-success]="notification.type === 'success'" [class.bg-danger-soft]="notification.type === 'error'" [class.text-danger]="notification.type === 'error'" role="status" aria-live="polite">
+    <tabler-icon class="mt-0.5 shrink-0" [icon]="notification.type === 'success' ? 'circle-check' : 'alert-triangle'" [size]="20" />
+    <span class="font-semibold leading-snug">{{ notification.message }}</span>
+  </div>
+}

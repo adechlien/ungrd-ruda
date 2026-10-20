@@ -1,0 +1,271 @@
+@if (!recordStore.user()) {
+  <!--Login-->
+  <main class="min-h-screen flex flex-col items-center justify-center p-4 bg-surface-soft">
+    <form class="w-full max-w-96 rounded-2xl border border-border-soft bg-surface p-6 shadow-[0_10px_35px_#282a660a]" (ngSubmit)="login()">
+      <img class="justify-items-start mx-auto h-20 object-contain in-data-[[theme=dark]]:mix-blend-screen" [src]="darkThemeActive() ? '/logoungrd-dark.png' : '/logoungrd-light.png'" alt="UNGRD" />
+      <div class="group/field min-w-0 pt-2 mt-6 [&_.outlined-control]:h-13 [&_.outlined-control]:rounded-[10px] [&_.outlined-control]:px-4.5 [&_.outlined-control:has(>input)]:px-0 [&_.outlined-control>input]:px-4.5"><label class="relative z-1 -my-2 ml-3.5 flex min-h-0 w-fit max-w-[calc(100%-32px)] items-center gap-1 bg-surface px-[5px] text-xs leading-4 font-normal text-brand-navy [overflow-wrap:anywhere] group-focus-within/field:text-brand-purple" for="login-email">Correo Institucional</label><input class="h-13 w-full rounded-[10px] border border-border-overlay bg-surface px-4.5 py-3 text-ink outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-1" id="login-email" name="email" type="email" autocomplete="username" [(ngModel)]="loginEmail" required /></div>
+      <div class="group/field min-w-0 pt-2 mt-6 [&_.outlined-control]:h-13 [&_.outlined-control]:rounded-[10px] [&_.outlined-control]:px-4.5 [&_.outlined-control:has(>input)]:px-0 [&_.outlined-control>input]:px-4.5"><label class="relative z-1 -my-2 ml-3.5 flex min-h-0 w-fit max-w-[calc(100%-32px)] items-center gap-1 bg-surface px-[5px] text-xs leading-4 font-normal text-brand-navy [overflow-wrap:anywhere] group-focus-within/field:text-brand-purple" for="login-password">Contraseña</label><input class="h-13 w-full rounded-[10px] border border-border-overlay bg-surface px-4.5 py-3 text-ink outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-1" id="login-password" name="password" type="password" autocomplete="current-password" [(ngModel)]="loginPassword" required /></div>
+      @if (recordStore.storageError()) { <p role="alert" class="mt-4 text-[13px] leading-[1.7] text-danger">{{ recordStore.storageError() }}</p> }
+      <button class="mt-6.5 w-full rounded-lg bg-brand-purple p-[13px] text-white disabled:cursor-wait disabled:opacity-60" type="submit" [disabled]="recordStore.loading()">{{ recordStore.loading() ? 'Conectando…' : 'Ingresar' }}</button>
+      <p class="text-xs mt-2">peter@example.com - RudaDemo2026!</p>
+    </form>
+  </main>
+} @else {
+<!--Inicio-->
+<main class="min-h-screen bg-surface text-ink">
+  <aside class="workspace-shell transition-[grid-template-columns,gap] duration-300 ease-in-out motion-reduce:transition-none [&.sidebar-collapsed]:[--workspace-sidebar-width:60px] [&.sidebar-collapsed]:[--workspace-sidebar-gap:24px] [--workspace-sidebar-width:270px] [--workspace-sidebar-gap:32px] grid grid-cols-[var(--workspace-sidebar-width)_minmax(0,1fr)] bg-page p-3 gap-(--workspace-sidebar-gap) min-h-dvh max-[1100px]:[--workspace-sidebar-width:235px] max-[1100px]:[--workspace-sidebar-gap:18px] max-[700px]:[--workspace-sidebar-width:76px] max-[700px]:[--workspace-sidebar-gap:10px] max-[700px]:p-1.5" [class.sidebar-collapsed]="sidebarCollapsed()">
+    <ng-template #accountPanels>
+
+      <!--Panel de notificaciones-->
+        @if (notificationsOpen()) {
+          <section
+            class="workspace-notifications bg-surface border-solid rounded-lg mb-4 shadow-[0_4px_12px_#282a6610] p-[17px] border border-border-soft max-[700px]:fixed max-[700px]:left-22 max-[700px]:bottom-5 max-[700px]:w-[min(280px,_calc(100vw_-_104px))] max-[700px]:z-40 max-[700px]:max-h-[70dvh] max-[700px]:overflow-y-auto max-[700px]:m-0"
+            id="workspace-notifications"
+            aria-label="Notificaciones"
+          >
+            <div class="workspace-notifications-title flex justify-between items-center mb-2.5 gap-2.5">
+              <h2 class="text-[15px] font-semibold">Notificaciones</h2>
+              <button class="in-data-[theme=dark]:focus-visible:outline-[#ffca20] rounded-[5px] p-[5px] focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3" type="button" aria-label="Cerrar notificaciones" (click)="notificationsOpen.set(false)">
+                <tabler-icon icon="x" [size]="18" />
+              </button>
+            </div>
+            @if (pendingRecords().length) {
+              <p class="mt-3 text-[12px] leading-[1.7]">
+                <strong>{{ pendingRecords().length }} registros por terminar</strong>
+              </p>
+              <p class="mt-3 text-[12px] leading-[1.7]">Puede continuar sus borradores desde Registros.</p>
+              <button
+                type="button"
+                class="workspace-notification-link mt-3.5 text-[12px] text-brand-purple `in-data-[theme=dark]:focus-visible:outline-[#ffca20] focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3"
+                (click)="navigateDashboard('forms')"
+              >
+                Ver mis registros
+              </button>
+            } @else {
+              <p class="mt-3 text-[12px] leading-[1.7]">No tiene registros pendientes.</p>
+            }
+          </section>
+        }
+
+        <!--Panel de perfil-->
+        @if (profileOpen()) {
+          <section #profileMenu class="workspace-profile-menu mb-2.5 border-solid rounded-lg bg-surface shadow-popup p-[17px] border border-border-soft" id="workspace-profile-menu" aria-label="Preferencias del perfil">
+            <strong class="block pt-0.5 pb-0 text-[15px] text-brand-navy px-0.5">{{ recordStore.user()?.name }}</strong>
+            <small class="workspace-profile-email block mt-[3px] mb-0 overflow-hidden text-secondary text-[11px] text-ellipsis whitespace-nowrap mx-0.5">{{ recordStore.user()?.email }}</small>
+            <p class="workspace-profile-subtitle mt-4.5 mb-2 text-secondary text-[11px] font-semibold mx-0.5">Preferencias</p>
+            <div class="workspace-theme-options grid grid-cols-3 gap-[7px]" role="radiogroup" aria-label="Tema de la interfaz">
+              <button class="in-data-[theme=dark]:focus-visible:outline-[#ffca20] grid place-items-center w-full min-w-0 rounded-lg text-secondary p-2.5 enabled:hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-40 [&.selected]:bg-surface-selected [&.selected]:text-brand-navy [&.selected]:font-semibold focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3" type="button" role="radio" aria-label="Modo claro" title="Light" aria-checked="true" [class.selected]="true">
+                <tabler-icon icon="sun" [size]="19" />
+              </button>
+              <button class="in-data-[theme=dark]:focus-visible:outline-[#ffca20] grid place-items-center w-full min-w-0 rounded-lg text-secondary p-2.5 enabled:hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-40 [&.selected]:bg-surface-selected [&.selected]:text-brand-navy [&.selected]:font-semibold focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3" type="button" role="radio" aria-label="Modo oscuro" title="Dark" aria-checked="false" disabled>
+                <tabler-icon icon="moon" [size]="19" />
+              </button>
+              <button class="in-data-[theme=dark]:focus-visible:outline-[#ffca20] grid place-items-center w-full min-w-0 rounded-lg text-secondary p-2.5 enabled:hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-40 [&.selected]:bg-surface-selected [&.selected]:text-brand-navy [&.selected]:font-semibold focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3" type="button" role="radio" aria-label="Usar tema del sistema" title="System" aria-checked="false" disabled>
+                <tabler-icon icon="device-desktop" [size]="19" />
+              </button>
+            </div>
+            <button type="button" class="workspace-logout flex items-center justify-start border-solid rounded-lg w-full mt-5.5 text-danger text-[12px] font-semibold py-2 px-2.5 gap-2 border-0 border-current in-data-[[theme=dark]]:text-danger in-data-[[theme=dark]]:hover:bg-danger-soft in-data-[theme=dark]:focus-visible:outline-[#ffca20] hover:bg-danger-soft focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3" (click)="requestLogout()">
+              <tabler-icon icon="logout" [size]="19" /> Cerrar sesión
+            </button>
+          </section>
+        }
+    </ng-template>
+    <aside id="workspace-sidebar" class="sticky top-3 h-[calc(100dvh-24px)] min-w-0 rounded-lg bg-surface-muted text-brand-navy max-[700px]:top-1.5 max-[700px]:h-[calc(100dvh-12px)] in-[[data-theme=dark]]:bg-[#203360] in-data-[[theme=dark]]:text-white" aria-label="Navegación principal" [attr.aria-busy]="sidebarAnimating()">
+      <div class="h-full transition-opacity duration-150 ease-in-out motion-reduce:transition-none" [class.opacity-0]="!sidebarContentVisible()" [inert]="sidebarAnimating()">
+    @if (!sidebarCollapsed()) {
+    <div class="workspace-sidebar flex h-full min-w-0 flex-col overflow-x-hidden overflow-y-auto p-[1.2rem] [scrollbar-width:thin] max-[1100px]:px-3 max-[700px]:pt-4 max-[700px]:pb-3 max-[700px]:px-[5px]">
+      <img
+        class="workspace-logo w-full h-22 object-contain max-[700px]:h-11 in-[[data-theme=dark]]:bg-transparent in-[[data-theme=dark]]:mix-blend-screen in-[[data-theme=dark]]:p-0"
+        [src]="darkThemeActive() ? '/logoungrd-dark.png' : '/logoungrd-light.png'"
+        alt="UNGRD - Unidad Nacional para la Gestión del Riesgo de Desastres"
+      />
+      <nav class="workspace-nav grid mt-6 gap-2" aria-label="Secciones">
+        @for (item of navigationItems; track item.tab) {
+          <button class="in-[[data-theme=dark]]:[&:not(.active)]:hover:bg-[rgb(255_255_255_/_10%)] in-[[data-theme=dark]]:[&.active]:bg-[#5274b2] in-[[data-theme=dark]]:focus-visible:[outline-color:#ffca20] flex items-center rounded-lg text-[14px] text-left py-3.5 px-3 gap-2.5 max-[700px]:text-[9px] max-[700px]:text-center max-[700px]:flex-col max-[700px]:py-3 max-[700px]:px-0.5 max-[700px]:gap-[7px] [&.active]:bg-brand-purple [&.active]:text-white [&.active]:font-semibold [&:not(.active)]:hover:bg-surface-selected focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3" type="button" [attr.aria-label]="item.label" [class.active]="item.tab === 'forms' ? view() === 'form' || dashboardTab() === 'forms' : view() === 'dashboard' && dashboardTab() === item.tab" [attr.aria-current]="(item.tab === 'forms' ? view() === 'form' || dashboardTab() === 'forms' : view() === 'dashboard' && dashboardTab() === item.tab) ? 'page' : null" (click)="navigateDashboard(item.tab)">
+            <tabler-icon class="shrink-0" [icon]="item.icon" [size]="21" /><span>{{ item.label }}</span>
+          </button>
+        }
+      </nav>
+      <div class="workspace-account mt-auto pt-[35px]">
+        <ng-container [ngTemplateOutlet]="accountPanels" />
+        <div class="workspace-profile-row flex items-center pt-4 pb-0 border-t border-solid border-t-border-soft px-0 gap-[3px] in-[[data-theme=dark]]:[border-top-color:rgb(255_255_255_/_20%)] max-[700px]:flex-col max-[700px]:py-3.5 max-[700px]:gap-2">
+          <button #profileButton type="button" class="workspace-profile flex items-center min-w-0 flex-1 text-left rounded-[7px] py-[5px] px-0 gap-[9px] in-[[data-theme=dark]]:hover:bg-[rgb(255_255_255_/_10%)] in-[[data-theme=dark]]:focus-visible:[outline-color:#ffca20] max-[700px]:flex-none max-[700px]:justify-center max-[700px]:w-10 max-[700px]:p-1.5 hover:bg-surface-selected focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3" aria-label="Mi perfil" [attr.aria-expanded]="profileOpen()" aria-controls="workspace-profile-menu" (click)="toggleProfile()">
+            <tabler-icon class="shrink-0 pl-1" icon="user-circle" [size]="27" /><span class="max-[700px]:hidden"
+              ><strong class="block text-[13px] font-semibold max-[1100px]:text-[12px]">{{ recordStore.user()?.name }}</strong><small class="in-[[data-theme=dark]]:text-[#ffca20] block text-[9px] tracking-[0.5px] mt-[1px] text-brand-purple">{{ recordStore.user()?.organizationType }}</small></span
+            >
+          </button>
+          <button
+            type="button"
+            class="workspace-bell relative grid place-items-center w-8.5 h-9.5 shrink-0 rounded-[7px] in-[[data-theme=dark]]:hover:bg-[rgb(255_255_255_/_10%)] in-[[data-theme=dark]]:focus-visible:[outline-color:#ffca20] hover:bg-surface-selected focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3"
+            [attr.aria-label]="
+              unreadNotifications() && pendingRecords().length
+                ? 'Notificaciones sin leer'
+                : 'Notificaciones'
+            "
+            [attr.aria-expanded]="notificationsOpen()"
+            aria-controls="workspace-notifications"
+            (click)="toggleNotifications()"
+          >
+            <tabler-icon icon="bell" [size]="24" />
+            @if (unreadNotifications() && pendingRecords().length) {
+              <span class="workspace-unread absolute w-[7px] h-[7px] rounded-full bg-brand-purple top-[5px] right-1 border-solid border border-surface-muted in-[[data-theme=dark]]:bg-[#ffca20] in-[[data-theme=dark]]:[border-top-color:#203360] in-[[data-theme=dark]]:[border-right-color:#203360] in-[[data-theme=dark]]:[border-bottom-color:#203360] in-[[data-theme=dark]]:[border-left-color:#203360]" aria-hidden="true"></span>
+            }
+          </button>
+        </div>
+        @if (sessionMessage()) {
+          <p class="workspace-session-message text-[11px] leading-[1.6] pt-3 pb-0 px-1 max-[700px]:fixed max-[700px]:left-22 max-[700px]:bottom-5 max-[700px]:w-[min(280px,_calc(100vw_-_104px))] max-[700px]:z-41 max-[700px]:bg-surface max-[700px]:border-solid max-[700px]:rounded-[10px] max-[700px]:shadow-[0_4px_12px_#282a6620] max-[700px]:p-4 max-[700px]:border max-[700px]:border-border-soft" role="status">{{ sessionMessage() }}</p>
+        }
+      </div>
+    </div>
+
+    } @else {
+      <div class="flex h-full min-w-0 flex-col items-center px-2 py-4">
+        <img class="h-9 w-8 object-contain in-[[data-theme=dark]]:mix-blend-screen" src="/ungrd.png?v=2" alt="UNGRD" />
+        <nav class="mt-7 grid gap-3" aria-label="Secciones">
+          @for (item of navigationItems; track item.tab) {
+            <button type="button" class="grid size-10 place-items-center rounded-lg transition-colors hover:bg-surface-selected in-[[data-theme=dark]]:hover:bg-[rgb(255_255_255_/_10%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-purple in-[[data-theme=dark]]:focus-visible:outline-[#ffca20] [&.active]:bg-brand-purple [&.active]:text-white in-[[data-theme=dark]]:[&.active]:bg-[#5274b2]" [attr.aria-label]="item.label" [title]="item.label" [class.active]="item.tab === 'forms' ? view() === 'form' || dashboardTab() === 'forms' : view() === 'dashboard' && dashboardTab() === item.tab" [attr.aria-current]="(item.tab === 'forms' ? view() === 'form' || dashboardTab() === 'forms' : view() === 'dashboard' && dashboardTab() === item.tab) ? 'page' : null" (click)="navigateDashboard(item.tab)">
+              <tabler-icon [icon]="item.icon" [size]="22" />
+            </button>
+          }
+        </nav>
+        <div class="mt-auto flex w-full flex-col items-center gap-3 border-t border-border-soft in-[[data-theme=dark]]:border-white/20 pt-4">
+          <button type="button" class="relative grid size-9 place-items-center rounded-lg hover:bg-surface-selected in-[[data-theme=dark]]:hover:bg-[rgb(255_255_255_/_10%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-purple in-[[data-theme=dark]]:focus-visible:outline-[#ffca20]" aria-label="Notificaciones" title="Notificaciones" [attr.aria-expanded]="notificationsOpen()" aria-controls="workspace-notifications" (click)="toggleNotifications()">
+            <tabler-icon icon="bell" [size]="22" />
+            @if (unreadNotifications() && pendingRecords().length) { <span class="absolute right-1 top-1 size-1.5 rounded-full bg-brand-purple in-[[data-theme=dark]]:bg-[#ffca20]" aria-hidden="true"></span> }
+          </button>
+          <button #profileButton type="button" class="grid size-9 place-items-center rounded-full hover:bg-surface-selected in-[[data-theme=dark]]:hover:bg-[rgb(255_255_255_/_10%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-purple in-[[data-theme=dark]]:focus-visible:outline-[#ffca20]" aria-label="Mi perfil" [title]="recordStore.user()?.name || 'Mi perfil'" [attr.aria-expanded]="profileOpen()" aria-controls="workspace-profile-menu" (click)="toggleProfile()">
+            <tabler-icon icon="user-circle" [size]="27" />
+          </button>
+        </div>
+        @if (profileOpen() || notificationsOpen()) {
+          <div class="fixed bottom-6 left-22 z-50 max-h-[calc(100dvh-48px)] w-[min(280px,calc(100vw-104px))] overflow-y-auto text-brand-navy">
+            <ng-container [ngTemplateOutlet]="accountPanels" />
+          </div>
+        }
+        @if (sessionMessage()) { <p class="fixed bottom-6 left-22 z-50 w-[min(280px,calc(100vw-104px))] rounded-lg border border-border-soft bg-surface p-4 text-xs text-brand-navy shadow-popup" role="status">{{ sessionMessage() }}</p> }
+      </div>
+    }
+      </div>
+    </aside>
+    <button type="button" class="workspace-sidebar-toggle fixed left-[calc(12px+var(--workspace-sidebar-width)-14px)] top-1/2 z-35 grid size-7 -translate-y-1/2 place-items-center rounded-full border border-border-soft bg-surface text-brand-navy shadow-popup opacity-0 before:absolute before:-inset-3 before:rounded-full before:content-[''] transition-[left,background-color,opacity] duration-300 ease-in-out hover:opacity-100 hover:bg-surface-selected focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-brand-purple motion-reduce:transition-none max-[700px]:left-[calc(6px+var(--workspace-sidebar-width)-14px)] in-[[data-theme=dark]]:focus-visible:outline-[#ffca20]" [attr.aria-label]="sidebarCollapsed() ? 'Abrir barra lateral' : 'Colapsar barra lateral'" [title]="sidebarCollapsed() ? 'Expandir barra lateral' : 'Colapsar barra lateral'" aria-controls="workspace-sidebar" [attr.aria-expanded]="!sidebarCollapsed()" [disabled]="sidebarAnimating()" (click)="setSidebarCollapsed(!sidebarCollapsed())">
+      <tabler-icon [icon]="sidebarCollapsed() ? 'chevron-right' : 'chevron-left'" [size]="18" />
+    </button>
+    <div class="workspace-content min-w-0 pt-4 max-[700px]:pt-3">
+      @if (view() === 'dashboard') {
+        <app-dashboard
+          [tab]="dashboardTab()"
+          (openForm)="openRecord($event)"
+          (createForm)="createRecord()"
+        />
+      }
+      @if (currentRecord()) {
+        <div [hidden]="view() !== 'form'">
+          <div
+            class="mx-auto flex max-w-360 flex-wrap items-center justify-between gap-3 px-5 pt-6"
+          >
+            <div class="flex flex-wrap items-center gap-3">
+              <button type="button" class="flex items-center gap-2 rounded-lg px-4 py-2 text-sm text-brand-navy hover:bg-surface-muted" (click)="openLeaveDialog()">
+                <tabler-icon icon="chevron-left" [size]="20" /> Volver
+              </button>
+              @if (recordStore.saving()) {
+                <span role="status" class="text-xs text-secondary">Guardando…</span>
+              } @else {
+                <app-local-save-status [lastSavedAt]="savedLocallyAt()" />
+              }
+            </div>
+            <div class="flex flex-wrap items-center justify-end gap-3">
+              <button type="button" class="flex items-center gap-2 rounded-lg px-4 py-2 text-sm text-brand-navy hover:bg-surface-muted disabled:opacity-50" [disabled]="recordStore.saving()" (click)="saveCurrentDraft()">
+                <tabler-icon icon="device-floppy" [size]="20" /> Guardar
+              </button>
+              <button type="button" class="flex items-center gap-2 rounded-lg bg-brand-purple px-4 py-2 text-sm text-white hover:bg-brand-navy disabled:opacity-50 disabled:cursor-not-allowed" [disabled]="recordStore.saving() || !canFinish()" (click)="finishRecord()">
+                <tabler-icon icon="check" [size]="20" /> Terminar registro
+              </button>
+            </div>
+          </div>
+          @if (formMessage()) {
+            <p
+              role="alert"
+              class="mx-auto mt-4 max-w-300 rounded-lg bg-warning-soft p-4 text-sm text-warning"
+            >
+              {{ formMessage() }}
+            </p>
+          }
+          @if (recordStore.storageError()) {
+            <p role="alert" class="mx-auto mt-4 max-w-300 bg-danger-soft p-4 text-sm text-danger">
+              {{ recordStore.storageError() }}
+            </p>
+          }
+          <!-- Property bindings [dato] bajan estado; event bindings (evento) devuelven acciones hacia App. -->
+          <main class="mx-auto w-full max-w-360 px-5 py-14 lg:pt-20">
+            <app-form-stepper
+              [sections]="sections"
+              [activeSection]="activeSection()"
+              [completedSections]="completedSections()"
+              (sectionChange)="goToSection($event)"
+            />
+
+            @defer {
+            <app-dynamic-form [recordId]="currentRecord()?.id || ''" (coverRequested)="openSummary()"
+                [acta]="currentRecord()?.acta || null" [uploadingActa]="uploadingActa()" (actaSelected)="uploadActa($event)" (actaRemoved)="removeActa()" (repeatedRowRemoved)="removeRepeatedRow($event)"
+              [recordSummary]="recordSummary()"
+              [householdMembers]="members()"
+              (membersChange)="setMembers($event)"
+              [canFinish]="canFinish() && !recordStore.saving()"
+              (saveRequested)="openLeaveDialog()"
+              (finishRequested)="finishRecord()"
+              (partialFillRequested)="fillDemoRecord(false)"
+              (completeFillRequested)="fillDemoRecord(true)"
+              [schema]="currentSchema()"
+              [activeSection]="activeSection()"
+              [story]="story()"
+              [eventOptions]="eventOptions"
+              [selectedEvent]="selectedEvent()"
+              [selectedEventOption]="selectedEventOption()"
+              [selectedQuestions]="selectedQuestions()"
+              [answers]="answers()"
+              [sharedEvents]="recordStore.events()"
+              [sharedEventId]="currentRecord()?.eventId || ''"
+              [ethnicApplies]="ethnicApplies()"
+              [progress]="progressState()"
+              [lastSavedAt]="savedLocallyAt()"
+              (storyChange)="setStory($event)"
+              (eventChange)="setEvent($event)"
+              (answerChange)="setAnswer($event.index, $event.value)"
+              (fieldChange)="setFieldValue($event.section, $event.id, $event.value)"
+              (sharedEventChange)="selectSharedEvent($event)"
+              (ethnicChange)="setEthnic($event)"
+              (sectionChange)="goToSection($event)"
+            />
+            } @placeholder { <p class="p-6 text-sm text-secondary">Cargando registro…</p> }
+          </main>
+        </div>
+      }
+      <!--<app-site-footer />-->
+    </div>
+  </aside>
+
+  <!-- @if crea y destruye la modal en el DOM según el valor del signal. -->
+  @if (isSummaryOpen() && view() === 'form') {
+    <app-summary-modal
+      [coverInfo]="coverInfo"
+      [definitions]="coverDefinitions"
+      [repairComponents]="repairComponents"
+      [legalReferences]="legalReferences"
+      (close)="closeSummary()"
+    />
+  }
+</main>
+
+}
+
+<dialog #leaveDialog class="leave-dialog w-[min(520px,calc(100%_-_32px))] border-solid rounded-2xl text-brand-navy bg-surface m-auto p-7 border border-border-soft backdrop:bg-[rgb(15_23_42_/_45%)]" aria-labelledby="leave-title" aria-describedby="leave-description" (cancel)="$event.preventDefault(); closeLeaveDialog()">
+  <h2 class="text-[22px] font-bold mb-3.5" id="leave-title">¿Guardar el borrador y volver?</h2>
+  <p class="text-[14px] leading-[1.6] mb-3" id="leave-description">Puede guardar el borrador para continuar después o volver sin guardar los cambios pendientes.</p>
+  <p class="leave-note text-[12px] leading-[1.6] mb-3 text-secondary">Los cambios ya guardados automáticamente se conservarán.</p>
+  @if (formMessage()) { <p class="text-[14px] leading-[1.6] mb-3" role="alert">{{ formMessage() }}</p> }
+  <div class="leave-actions flex flex-wrap justify-end mt-6 gap-2.5">
+    <button class="border-solid rounded-lg text-[14px] py-2.5 px-3.5 border border-border-soft disabled:opacity-50 disabled:cursor-wait" type="button" autofocus (click)="closeLeaveDialog()">Cancelar</button>
+    <button class="border-solid rounded-lg text-[14px] py-2.5 px-3.5 border border-border-soft disabled:opacity-50 disabled:cursor-wait" type="button" [disabled]="recordStore.saving()" (click)="leaveUnsavedForm()">Volver sin guardar</button>
+    <button type="button" class="leave-save border-solid rounded-lg text-[14px] bg-brand-purple text-white py-2.5 px-3.5 border border-border-soft disabled:opacity-50 disabled:cursor-wait" [disabled]="recordStore.saving()" (click)="saveAndLeave()">{{ recordStore.saving() ? 'Guardando…' : 'Guardar y volver' }}</button>
+  </div>
+</dialog>

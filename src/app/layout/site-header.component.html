@@ -1,0 +1,17 @@
+<!-- Vista del encabezado: barra GOV.CO, identidad UNGRD y botón que solicita abrir la modal de resumen. -->
+<!-- Primera franja institucional. -->
+<div class="h-12 bg-gov-blue max-sm:h-14.5">
+  <div class="mx-auto flex h-full w-full max-w-300 items-center justify-between px-5">
+    <img src="/logogov.png" alt="GOV.CO" class="h-9 w-40 object-contain object-left" />
+    <tabler-icon class="text-surface" icon="user-circle" [size]="38" [stroke]="1.8" aria-hidden="true" />
+  </div>
+</div>
+<!-- Segunda franja: (click) dispara el Output summaryOpen del componente. -->
+<header class="h-24 border-b border-form-border bg-surface max-[1040px]:h-32.5 max-sm:h-26">
+  <div class="mx-auto flex h-full w-full max-w-300 items-center justify-between gap-5 px-5">
+    <img src="/logoungrd.png" alt="UNGRD - Unidad Nacional para la Gestión del Riesgo de Desastres" class="h-18.5 w-57.5 object-contain object-left max-sm:h-14 max-sm:w-32.5" />
+    <div class="flex items-center gap-5">
+      <button type="button" (click)="summaryOpen.emit()" class="flex h-12 items-center gap-2.5 rounded-lg border border-highlight-border bg-highlight-soft px-4 text-base hover:border-brand-purple focus:outline-none focus:ring-2 focus:ring-brand-purple/20 max-sm:h-11 max-sm:px-3"><tabler-icon icon="file-description" [size]="22" /> Ver portada</button>
+    </div>
+  </div>
+</header>

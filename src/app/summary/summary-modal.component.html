@@ -1,0 +1,67 @@
+<!-- Vista de la modal de portada: mantiene cabecera/pestañas fijas y cambia el panel informativo seleccionado. -->
+<div class="fixed inset-0 z-50 grid place-items-center overflow-hidden overscroll-contain bg-overlay p-6" (click)="close.emit()">
+  <section class="summary-modal relative flex h-[90vh] min-h-162.5 w-[min(1200px,90vw)] flex-col overflow-hidden rounded-lg border border-border-strong bg-surface px-6 pb-0 pt-4 shadow-modal max-[1040px]:w-[94vw] max-sm:h-[94vh] max-sm:min-h-0 max-sm:px-5.5 max-sm:pt-9" role="dialog" aria-modal="true" aria-labelledby="summary-title" (click)="$event.stopPropagation()">
+    <button class="absolute right-4 top-4.5 border-0 bg-transparent text-muted" type="button" aria-label="Cerrar" (click)="close.emit()"><tabler-icon icon="x" [size]="28" /></button>
+    <h2 class="m-0 shrink-0 text-2xl text-brand-navy" id="summary-title">Portada</h2><p class="mb-4 shrink-0 text-base text-placeholder max-sm:mb-6">Resumen del proyecto, conceptos clave y marco normativo del registro RUDA</p>
+
+    <!-- Navegación de pestañas de la modal. Las etiquetas e iconos se definen en summary-modal.component.ts. -->
+    <!-- Las clases del contenedor desplazan el único indicador inferior mediante CSS. -->
+    <div class="modal-tabs grid shrink-0 grid-cols-4 border-b-4 border-form-border relative max-sm:flex max-sm:overflow-x-auto after:[content:''] after:absolute after:z-2 after:bottom-[-4px] after:left-0 after:w-[25%] after:h-1 after:bg-brand-purple after:[transform:translateX(0)] after:[transition:transform_.25s_ease] max-[640px]:after:hidden [&.active-definiciones]:after:[transform:translateX(100%)] [&.active-reparacion]:after:[transform:translateX(200%)] [&.active-legal]:after:[transform:translateX(300%)] motion-reduce:after:[transition:none]" [class.active-definiciones]="activeTab() === 'definiciones'" [class.active-reparacion]="activeTab() === 'reparacion'" [class.active-legal]="activeTab() === 'legal'" role="tablist">@for (tab of tabs; track tab.id) { <button class="flex h-12 items-center justify-center gap-2.5 border-0 bg-surface text-base text-tab relative z-1 max-sm:min-w-47.5 [&.active]:font-bold [&.active]:text-brand-purple max-[640px]:[&.active]:border-b-[4px] max-[640px]:[&.active]:border-solid max-[640px]:[&.active]:border-b-brand-purple" type="button" role="tab" (click)="activeTab.set(tab.id)" [class.active]="activeTab() === tab.id"><tabler-icon [icon]="tab.icon" [size]="22" />{{ tab.label }}</button> }</div>
+
+    <!-- Área desplazable: el encabezado y las pestañas permanecen visibles. -->
+    <div class="summary-tab-scroll min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain pr-1 [scrollbar-color:var(--color-scroll)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-track]:my-3.5 [&::-webkit-scrollbar-thumb]:border-solid [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-scroll [&::-webkit-scrollbar-thumb]:border-surface [&::-webkit-scrollbar-thumb]:border-2 [&::-webkit-scrollbar-thumb]:hover:bg-scroll-hover">
+
+    <!-- Pestaña 1: Información general -->
+    <!-- Angular conserva solamente el panel correspondiente al signal activeTab. -->
+    @if (activeTab() === 'general') {
+      <div class="tab-panel">
+      <div class="mt-6 flex flex-col gap-1.5 rounded bg-surface-muted p-4"><span class="text-base font-bold text-brand-navy">{{ coverInfo.subtitle }}</span><p class="m-0 max-w-237.5 text-sm leading-normal text-muted">{{ coverInfo.description }}</p></div>
+      <div class="grid grid-cols-4 gap-4 gap-y-8 p-4 [&_.item-icon]:shrink-0 [&_.span-all]:col-span-4 [&_.span-two]:col-span-2 [&_.summary-item]:flex [&_.summary-item]:gap-3 [&_.summary-item]:text-tab [&_.summary-item_p]:m-0 [&_.summary-item_p]:text-sm [&_.summary-item_p]:leading-[1.35] [&_.summary-item_span]:block [&_.summary-item_strong]:block max-[1040px]:grid-cols-2 max-[1040px]:[&_.span-all]:col-span-2 max-sm:grid-cols-1 max-sm:gap-5 max-sm:px-1 max-sm:py-6 max-sm:[&_.span-all]:col-span-1 max-sm:[&_.span-two]:col-span-1">
+        <!-- Fila 1: datos cortos de identificación y vigencia. -->
+        <div class="summary-item"><tabler-icon class="item-icon" icon="file-description" [size]="24" /><p><strong>Código del registro</strong><span>{{ coverInfo.code }}</span></p></div>
+        <div class="summary-item"><tabler-icon class="item-icon" icon="file-description" [size]="24" /><p><strong>Versión</strong><span>{{ coverInfo.version }}</span></p></div>
+        <div class="summary-item"><tabler-icon class="item-icon" icon="file-description" [size]="24" /><p><strong>Fecha de vigencia</strong><span>{{ coverInfo.effectiveDate }}</span></p></div>
+        <div class="summary-item"><tabler-icon class="item-icon" icon="scale" [size]="24" /><p><strong>Marco legal principal</strong><span>{{ coverInfo.law }}<br>Diario Oficial No. 53.509</span></p></div>
+        <!-- Fila 2: responsabilidad institucional y normas relacionadas. -->
+        <div class="summary-item span-two"><tabler-icon class="item-icon" icon="building" [size]="24" /><p><strong>Entidad responsable</strong><span>{{ coverInfo.responsibleEntity }}</span></p></div>
+        <div class="summary-item span-two"><tabler-icon class="item-icon" icon="book-2" [size]="24" /><p><strong>Normas complementarias</strong><span>{{ coverInfo.complementaryRules }}</span></p></div>
+        <!-- Fila 3: fuentes jurisprudenciales e internacionales. -->
+        <div class="summary-item span-two"><tabler-icon class="item-icon" icon="scale" [size]="24" /><p><strong>Jurisprudencia aplicable</strong><span>{{ coverInfo.jurisprudence }}</span></p></div>
+        <div class="summary-item span-two"><tabler-icon class="item-icon" icon="book-2" [size]="24" /><p><strong>Derecho internacional</strong><span>{{ coverInfo.internationalLaw }}</span></p></div>
+        <!-- Fila 4: naturaleza y alcance del instrumento. -->
+        <div class="summary-item span-all"><tabler-icon class="item-icon" icon="shield-check" [size]="24" /><p><strong>Naturaleza del registro</strong><span>Instrumento de carácter administrativo para la protección y atención del desplazamiento ambiental en Colombia.</span></p></div>
+      </div>
+      </div>
+
+    <!-- Pestaña 2: Definiciones -->
+    } @else if (activeTab() === 'definiciones') {
+      <div class="tab-panel grid grid-cols-2 gap-3 px-1 pb-6 pt-7.5 max-sm:grid-cols-1">
+        @for (item of definitions; track item.term; let i = $index) {
+          <article class="relative rounded-xl border border-border-soft bg-surface p-3.5 pr-10">
+            <span class="absolute right-0 top-0 grid size-7 place-items-center rounded-bl-lg rounded-tr-lg bg-surface-icon text-xs font-bold text-brand-purple [&.updated-definition-number]:bg-success-badge! [&.updated-definition-number]:text-success!" [class.updated-definition-number]="item.updated">{{ i + 1 }}</span>
+            <div class="flex flex-col gap-1.5"><h3 class="m-0 text-sm font-bold leading-tight text-brand-navy">{{ item.term }}</h3><p class="m-0 text-sm leading-[1.4] text-secondary">{{ item.definition }}</p><small class="block text-xs leading-[1.35] text-subtle">{{ item.source }}</small></div>
+          </article>
+        }
+      </div>
+
+    <!-- Pestaña 3: Reparación integral -->
+    } @else if (activeTab() === 'reparacion') {
+      <div class="tab-panel grid grid-cols-3 gap-3 px-1 pb-6 pt-7.5 max-[1040px]:grid-cols-2 max-sm:grid-cols-1">
+        @for (component of repairComponents; track component.name) {
+          <article class="relative rounded-xl border border-border-soft bg-surface p-3.5 pr-12"><div class="absolute right-0 top-0 grid size-9 place-items-center rounded-bl-lg rounded-tr-lg bg-surface-icon text-brand-purple"><tabler-icon icon="shield-check" [size]="21" /></div><div class="flex flex-col gap-1.5"><h3 class="m-0 text-sm font-bold leading-tight text-brand-navy">{{ component.name }}</h3><p class="m-0 text-sm leading-[1.4] text-secondary">{{ component.description }}</p><small class="block text-xs leading-[1.35] text-subtle">{{ component.source }}</small></div></article>
+        }
+      </div>
+
+    <!-- Pestaña 4: Marco normativo -->
+    } @else {
+      <div class="tab-panel grid grid-cols-2 gap-3 px-1 pb-6 pt-7.5 max-sm:grid-cols-1">
+        @for (reference of legalReferences; track reference.title) {
+          <article class="relative rounded-xl border border-border-soft bg-surface p-3.5"><span class="absolute right-0 top-0 min-w-28 rounded-bl-lg rounded-tr-lg bg-surface-icon px-2 py-1 text-center text-xs font-bold uppercase text-brand-purple">{{ reference.category }}</span><div class="flex flex-col gap-1.5"><h3 class="m-0 pr-30 text-sm font-bold leading-tight text-brand-navy">{{ reference.title }}</h3><p class="m-0 text-sm leading-[1.4] text-secondary">{{ reference.detail }}</p><small class="block text-xs leading-[1.35] text-subtle">{{ reference.publication }}</small></div></article>
+        }
+      </div>
+    }
+
+    </div>
+
+  </section>
+</div>

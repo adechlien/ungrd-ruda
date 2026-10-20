@@ -1,0 +1,15 @@
+<!-- Ruta de secciones: horizontal en escritorio y vertical en dispositivos móviles. -->
+<nav class="stepper mx-auto mb-17 flex w-full max-w-280 items-center max-[1160px]:mb-14 max-sm:flex-col max-sm:items-stretch" aria-label="Progreso del registro">
+  <!-- Cada paso emite su número; App conserva y actualiza la sección activa. -->
+  @for (section of sections; track section.number; let last = $last) {
+    <button type="button" [disabled]="!section.enabled" (click)="sectionChange.emit(section.number)" class="step relative flex min-w-0 flex-1 items-center gap-0 bg-transparent text-left text-step-muted last:flex-none disabled:cursor-default disabled:opacity-60 max-sm:min-h-14 max-sm:w-full max-sm:flex-none max-sm:items-start" [class.complete]="isComplete(section.number)" [class.line-complete]="isComplete(section.number)" [class.current]="section.number === activeSection">
+      <span class="step-capsule relative z-1 flex shrink-0 items-center gap-1.5 rounded-full border border-step-border bg-surface px-3 py-1.5 transition-colors in-[.step.complete]:[border-color:var(--color-brand-purple)] in-[.step.complete]:bg-surface-muted in-[.step.current]:[border-color:var(--color-brand-purple)] in-[.step.current]:bg-brand-purple in-[.step.current]:text-surface">
+        <span class="step-number shrink-0 text-xs font-medium transition-colors in-[.step.complete]:text-brand-purple in-[.step.current]:text-surface">{{ section.number }}</span>
+        <span class="step-label max-w-32 text-xs leading-tight transition-colors max-sm:max-w-none in-[.step.complete]:font-bold in-[.step.complete]:text-brand-navy in-[.step.current]:font-bold in-[.step.current]:text-surface">{{ section.title }}</span>
+      </span>
+      @if (!last) {
+        <span class="step-connector h-px min-w-4 flex-1 bg-step-border transition-colors max-sm:absolute max-sm:left-3 max-sm:top-8 max-sm:h-6 max-sm:w-px max-sm:min-w-0 max-sm:flex-none in-[.step.line-complete]:bg-brand-purple" aria-hidden="true"></span>
+      }
+    </button>
+  }
+</nav>

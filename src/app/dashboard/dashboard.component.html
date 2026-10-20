@@ -1,0 +1,307 @@
+<main class="dashboard max-w-none pt-3.5 pr-6 pb-12 pl-0 w-full min-w-0 m-auto max-[900px]:pr-0 max-[640px]:pt-0 max-[640px]:pb-7.5">
+  <section class="dash-heading flex items-center justify-between gap-6 max-[900px]:items-start max-[900px]:flex-col max-[640px]:items-stretch max-[640px]:gap-4.5">
+    <div>
+      <h1 class="text-[32px] leading-[1.2] tracking-[-0.8px] font-bold text-brand-navy mt-0 mb-1 mx-0 max-[640px]:text-[27px]">{{ tab() === 'forms' ? 'Mis registros' : tab() === 'events' ? 'Eventos registrados' : 'Estadísticas' }}</h1>
+      <p class="text-[13px] text-secondary m-0">
+        {{
+          tab() === 'forms'
+            ? 'Gestione sus declaraciones y continúe sus registros pendientes.'
+            : tab() === 'events'
+              ? 'Consulte los hechos compartidos y los hogares vinculados a cada uno.'
+              : 'Explore los eventos, desplazamientos y características de las personas declarantes.'
+        }}
+      </p>
+    </div>
+    @if (tab() === 'forms') {
+      <div class="dash-heading-actions flex items-center gap-2.5 max-[900px]:flex-wrap max-[640px]:items-stretch max-[640px]:flex-col">
+        <button class="dash-primary inline-flex items-center justify-center bg-brand-purple border-solid rounded-lg text-white text-[14px] font-semibold whitespace-nowrap py-[13px] px-[19px] gap-[9px] border border-brand-purple hover:bg-brand-navy focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3" (click)="createForm.emit()">
+          <tabler-icon icon="plus" [size]="20" /> Nuevo registro
+        </button>
+      </div>
+    }
+  </section>
+
+  @if (store.storageError()) {
+    <p class="dash-error bg-danger-soft text-danger text-[13px] p-3" role="alert">{{ store.storageError() }}</p>
+  }
+  @if (tab() === 'forms') {
+  <section class="dash-metrics grid grid-cols-3 mt-8 mb-20 gap-5 max-[1300px]:gap-2.5 max-[900px]:grid-cols-1 max-[640px]:mb-4.5" aria-label="Resumen de mis registros">
+    <article class="flex items-center bg-surface border-solid rounded-lg p-3 gap-[17px] border border-border-soft max-[1050px]:p-4.5 max-[1050px]:gap-3 max-[640px]:py-3.5">
+      <span class="dash-metric-icon grid place-items-center w-12 h-12 rounded-lg bg-surface-icon text-brand-purple shrink-0 max-[1300px]:w-9.5 max-[1300px]:h-9.5"><tabler-icon icon="file-description" [size]="25" /></span>
+      <div class="grid grid-cols-[minmax(0,_1fr)_auto] flex-1 min-w-0 gap-x-3 max-[640px]:grid-cols-[1fr_auto]">
+        <p class="text-[13px] text-secondary m-0 max-[640px]:self-center">Total de registros</p>
+        <strong class="[grid-row:1_/_3] [grid-column:2] self-center text-right block text-[1.75rem] font-bold text-brand-navy leading-[1.25] mr-1 max-[640px]:[grid-row:1/3] max-[640px]:text-[26px]">{{ store.records().length }}</strong
+        ><small>Declaraciones registradas</small>
+      </div>
+    </article>
+    <article class="flex items-center bg-surface border-solid rounded-lg p-3 gap-[17px] border border-border-soft max-[1050px]:p-4.5 max-[1050px]:gap-3 max-[640px]:py-3.5">
+      <span class="dash-metric-icon green grid place-items-center w-12 h-12 rounded-lg bg-success-soft text-success shrink-0 max-[1300px]:w-9.5 max-[1300px]:h-9.5"><tabler-icon icon="circle-check" [size]="25" /></span>
+      <div class="grid grid-cols-[minmax(0,_1fr)_auto] flex-1 min-w-0 gap-x-3 max-[640px]:grid-cols-[1fr_auto]">
+        <p class="text-[13px] text-secondary m-0 max-[640px]:self-center">Terminados</p>
+        <strong class="[grid-row:1_/_3] [grid-column:2] self-center text-right block text-[1.75rem] font-bold text-brand-navy leading-[1.25] mr-1 max-[640px]:[grid-row:1/3] max-[640px]:text-[26px]">{{ completed() }}</strong
+        ><small>Disponibles para consultar y editar</small>
+      </div>
+    </article>
+    <article class="flex items-center bg-surface border-solid rounded-lg p-3 gap-[17px] border border-border-soft max-[1050px]:p-4.5 max-[1050px]:gap-3 max-[640px]:py-3.5">
+      <span class="dash-metric-icon amber grid place-items-center w-12 h-12 rounded-lg bg-warning-soft text-warning shrink-0 max-[1300px]:w-9.5 max-[1300px]:h-9.5"><tabler-icon icon="clock" [size]="25" /></span>
+      <div class="grid grid-cols-[minmax(0,_1fr)_auto] flex-1 min-w-0 gap-x-3 max-[640px]:grid-cols-[1fr_auto]">
+        <p class="text-[13px] text-secondary m-0 max-[640px]:self-center">Por terminar</p>
+        <strong class="[grid-row:1_/_3] [grid-column:2] self-center text-right block text-[1.75rem] font-bold text-brand-navy leading-[1.25] mr-1 max-[640px]:[grid-row:1/3] max-[640px]:text-[26px]">{{ pending() }}</strong
+        ><small>Continúe donde se quedó</small>
+      </div>
+    </article>
+  </section>
+  }
+  @if (tab() === 'forms') {
+    <section class="dash-panel dash-panel-borderless bg-surface border-none rounded-lg overflow-visible border-0 border-current">
+      <div class="dash-toolbar flex items-center justify-between pt-0 pb-5.5 px-0 gap-3.5 max-[1300px]:items-start max-[1300px]:flex-wrap max-[1050px]:flex-col max-[640px]:pb-4">
+        <div class="dash-query-tools flex items-center justify-between w-full min-w-0 gap-3.5 max-[1300px]:flex-[1_1_100%] max-[900px]:[flex-basis:100%] max-[900px]:flex-wrap max-[640px]:items-stretch max-[640px]:flex-col">
+          <div class="dash-filters flex bg-surface-soft rounded-lg p-1 gap-[3px] max-[1050px]:self-start max-[640px]:w-full max-[640px]:justify-between" aria-label="Filtrar por estado">
+            <button class="text-[12px] text-secondary whitespace-nowrap py-2 px-2.5 rounded-md max-[640px]:text-[11px] max-[640px]:px-2 [&.selected]:bg-surface [&.selected]:text-brand-navy [&.selected]:shadow-[0_1px_4px_#282a661a] [&.selected]:font-semibold focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3"
+              [class.selected]="filter() === 'all'"
+              [attr.aria-pressed]="filter() === 'all'"
+              (click)="setFilter('all')"
+            >
+              Todos <span class="text-[10px] ml-1 py-0.5 px-[5px] rounded">{{ store.records().length }}</span>
+            </button>
+            <button class="text-[12px] text-secondary whitespace-nowrap py-2 px-2.5 rounded-md max-[640px]:text-[11px] max-[640px]:px-2 [&.selected]:bg-surface [&.selected]:text-brand-navy [&.selected]:shadow-[0_1px_4px_#282a661a] [&.selected]:font-semibold focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3"
+              [class.selected]="filter() === 'pending'"
+              [attr.aria-pressed]="filter() === 'pending'"
+              (click)="setFilter('pending')"
+            >
+              Por terminar <span class="text-[10px] ml-1 py-0.5 px-[5px] rounded">{{ pending() }}</span>
+            </button>
+            <button class="text-[12px] text-secondary whitespace-nowrap py-2 px-2.5 rounded-md max-[640px]:text-[11px] max-[640px]:px-2 [&.selected]:bg-surface [&.selected]:text-brand-navy [&.selected]:shadow-[0_1px_4px_#282a661a] [&.selected]:font-semibold focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3" [class.selected]="filter() === 'completed'" [attr.aria-pressed]="filter() === 'completed'" (click)="setFilter('completed')">
+              Terminados <span class="text-[10px] ml-1 py-0.5 px-[5px] rounded">{{ completed() }}</span>
+            </button>
+          </div>
+          <div #searchTools class="relative w-80 max-w-full max-[1050px]:w-full">
+          <div class="dash-search flex items-center border-solid rounded-lg text-secondary w-full max-w-full py-2.5 px-3 gap-2 border border-border-soft max-[1050px]:w-full focus-within:outline-solid focus-within:outline-brand-purple focus-within:outline-2 focus-within:outline-offset-2"
+            ><tabler-icon class="shrink-0" icon="search" [size]="19" /><input class="min-w-0 flex-1 border-solid outline-none text-[12px] bg-transparent border-0 border-current"
+              aria-label="Buscar por nombre, documento, código, evento o municipio"
+              placeholder="Buscar nombre, documento o código…"
+              [value]="query()"
+              (input)="search($any($event.target).value)"
+          />
+            <button #searchOptionsButton type="button" class="grid size-6 shrink-0 place-items-center rounded text-secondary hover:text-brand-navy focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-purple [&.active]:bg-surface-muted [&.active]:text-brand-purple" [class.active]="searchOptionsOpen()" aria-label="Filtros de búsqueda" title="Filtros de búsqueda" aria-controls="record-search-options" [attr.aria-expanded]="searchOptionsOpen()" (click)="searchOptionsOpen.set(!searchOptionsOpen())">
+              <tabler-icon icon="filter" [size]="19" />
+            </button>
+          </div>
+          @if (searchOptionsOpen()) {
+            <div id="record-search-options" role="group" aria-label="Filtrar y ordenar registros" class="absolute left-0 right-0 top-[calc(100%+8px)] z-40 grid grid-cols-[56px_minmax(0,1fr)] items-center gap-x-2 gap-y-3 rounded-xl border border-border-soft bg-surface p-3 shadow-popup">
+              <label for="event-filter" class="text-xs text-secondary">Filtrar</label>
+              <app-custom-select class="min-w-0" controlId="event-filter" [options]="eventFilterOptions()" [optionIcons]="eventFilterIcons()" [value]="selectedEventFilterLabel()" placeholder="" (valueChange)="chooseEventFilter($event)" />
+              <label for="record-sort" class="text-xs text-secondary">Ordenar</label>
+              <app-custom-select class="min-w-0" controlId="record-sort" [options]="sortOptions" [optionIcons]="sortIcons" [value]="sortBy()" placeholder="" (valueChange)="chooseSort($event)" />
+            </div>
+          }
+          </div>
+        </div>
+      </div>
+      <div class="dash-record-grid grid grid-cols-4 pt-0 pb-6 px-0 gap-4.5 max-[1300px]:grid-cols-2 max-[900px]:grid-cols-1 max-[640px]:pb-4">
+        @for (record of visible(); track record.id) {
+          <article class="dash-record-card cursor-pointer border-solid rounded-lg min-w-0 [transition:border-color_0.15s,_box-shadow_0.15s] p-4 border border-border-soft focus-visible:shadow-[0_4px_14px_#282a6609] focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:border-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3" role="button" tabindex="0"
+            [attr.aria-label]="(record.status === 'completed' ? 'Editar ' : 'Continuar ') + name(record) + ', ' + record.id"
+            (click)="openForm.emit(record)"
+            (keydown.enter)="openForm.emit(record)"
+            (keydown.space)="$event.preventDefault(); openForm.emit(record)">
+            <div class="dash-record-top flex items-center mb-5 text-brand-purple gap-2.5">
+              <span class="dash-status inline-block text-[10px] font-semibold rounded-[20px] text-warning bg-warning-soft shrink-0 py-1 px-[9px] [&.done]:bg-success-soft [&.done]:text-success" [class.done]="record.status === 'completed'">{{
+                record.status === 'completed' ? 'Terminado' : 'Por terminar'
+              }}</span
+              >
+              <span class="dash-record-id text-[10px] text-secondary flex-1 min-w-0 [overflow-wrap:anywhere]">{{ record.id }}</span>
+              <tabler-icon class="dash-record-edit opacity-0 shrink-0 [transition:opacity_.15s] in-[.dash-record-card:hover]:opacity-100 in-[.dash-record-card:focus-visible]:opacity-100" icon="edit" [size]="22" aria-hidden="true" />
+            </div>
+            <div class="dash-record-person flex [align-items:baseline] justify-between gap-3">
+              <h3 class="text-[17px] font-[650] text-brand-navy m-0">{{ name(record) }}</h3>
+              <p class="dash-record-document text-[11px] text-secondary leading-[1.7] [overflow-wrap:anywhere] shrink-0 whitespace-nowrap m-0">
+                {{
+                  record.answers['section-1-2']
+                    ? 'C.C ' + record.answers['section-1-2']
+                    : 'Documento pendiente'
+                }}
+              </p>
+            </div>
+            <p class="text-[12px] text-secondary leading-[1.7] [overflow-wrap:anywhere] mx-0">
+              {{ eventLabels[record.selectedEvent] }} en {{ record.answers['section-1-12'] || 'Ubicación pendiente' }}
+            </p>
+            <div class="dash-card-progress flex flex-wrap justify-between text-[10px] text-secondary my-5 mx-0 gap-1">
+              <span>Campos diligenciados</span><strong>{{ record.progress }}%</strong>
+              <div class="w-full h-[5px] bg-progress-track rounded-[5px] overflow-hidden"><span class="block h-full w-(--progress-width) bg-brand-purple" [style.--progress-width]="record.progress + '%'"></span></div>
+            </div>
+            <div class="dash-card-date flex justify-between border-t border-solid border-t-divider-soft pt-[15px] text-[10px] text-secondary gap-1.5">
+              <span>Última actualización</span
+              ><time>{{ record.savedAt | date: 'dd/MM/yyyy' }}</time>
+            </div>
+          </article>
+        } @empty {
+          <div class="dash-empty text-center [grid-column:1/-1] py-12 px-5">
+            <h3 class="text-[16px] font-[650] text-brand-navy mt-3 mb-2 mx-0">No se encontraron registros</h3>
+            <p class="text-[13px] text-secondary mb-3.5">Pruebe otro nombre, documento o filtro.</p>
+            <button class="dash-action inline-flex items-center border-solid text-brand-navy text-[12px] bg-surface py-2 px-2.5 gap-1.5 border border-border-soft rounded-md hover:bg-surface-muted hover:border-brand-purple focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3" (click)="search(''); setFilter('all'); eventFilter.set('')">
+              Limpiar filtros
+            </button>
+          </div>
+        }
+      </div>
+      <div class="dash-pagination flex items-center justify-end text-[11px] text-secondary px-0 gap-3 max-[640px]:py-[15px]">
+        <div class="flex items-center gap-3">
+          <button class="border-solid rounded-[5px] p-1.5 disabled:opacity-35 disabled:cursor-default focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3"
+            aria-label="Página anterior"
+            [disabled]="page() === 1"
+            (click)="page.set(page() - 1)"
+          >
+            <tabler-icon icon="chevron-left" [size]="18" /></button
+          >
+          @for (pageNumber of pageNumbers(); track pageNumber) {
+            <button
+              type="button"
+              class="dash-page-number border-solid rounded-[5px] min-w-7.5 text-secondary p-1.5 border border-transparent disabled:opacity-35 disabled:cursor-default hover:bg-surface-muted hover:text-brand-navy [&.selected]:bg-surface-muted [&.selected]:text-brand-navy [&.selected]:font-bold [&.selected]:border-border-soft focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3"
+              [class.selected]="page() === pageNumber"
+              [attr.aria-current]="page() === pageNumber ? 'page' : null"
+              [attr.aria-label]="'Ir a la página ' + pageNumber"
+              (click)="page.set(pageNumber)"
+            >{{ pageNumber }}</button>
+          }
+          <button class="border-solid rounded-[5px] p-1.5 disabled:opacity-35 disabled:cursor-default focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3"
+            aria-label="Página siguiente"
+            [disabled]="page() >= pages()"
+            (click)="page.set(page() + 1)"
+          >
+            <tabler-icon icon="chevron-right" [size]="18" />
+          </button>
+        </div>
+      </div>
+    </section>
+  } @else if (tab() === 'events') {
+    <section class="dash-events mt-6" aria-label="Eventos registrados">
+      <section class="dash-metrics grid grid-cols-3 mt-8 mb-7 gap-5 max-[1300px]:gap-2.5 max-[900px]:grid-cols-1" aria-label="Resumen de eventos registrados">
+        <article class="flex items-center bg-surface border-solid rounded-lg p-3 gap-[17px] border border-border-soft max-[1050px]:p-4.5 max-[1050px]:gap-3 max-[640px]:py-3.5">
+          <span class="dash-metric-icon grid place-items-center w-12 h-12 rounded-lg bg-surface-icon text-brand-purple shrink-0 max-[1300px]:w-9.5 max-[1300px]:h-9.5"><tabler-icon icon="calendar-event" [size]="25" /></span>
+          <div class="grid grid-cols-[minmax(0,_1fr)_auto] flex-1 min-w-0 gap-x-3 max-[640px]:grid-cols-[1fr_auto]"><p class="text-[13px] text-secondary m-0 max-[640px]:self-center">Eventos registrados</p><strong class="[grid-row:1_/_3] [grid-column:2] self-center text-right block text-[1.75rem] font-bold text-brand-navy leading-[1.25] mr-1 max-[640px]:[grid-row:1/3] max-[640px]:text-[26px]">{{ store.events().length }}</strong><small class="block text-[11px] text-secondary max-[1050px]:leading-[1.5] max-[640px]:mt-0.5">Ocurrencias identificadas</small></div>
+        </article>
+        <article class="flex items-center bg-surface border-solid rounded-lg p-3 gap-[17px] border border-border-soft max-[1050px]:p-4.5 max-[1050px]:gap-3 max-[640px]:py-3.5">
+          <span class="dash-metric-icon green grid place-items-center w-12 h-12 rounded-lg bg-success-soft text-success shrink-0 max-[1300px]:w-9.5 max-[1300px]:h-9.5"><tabler-icon icon="home" [size]="25" /></span>
+          <div class="grid grid-cols-[minmax(0,_1fr)_auto] flex-1 min-w-0 gap-x-3 max-[640px]:grid-cols-[1fr_auto]"><p class="text-[13px] text-secondary m-0 max-[640px]:self-center">Hogares vinculados</p><strong class="[grid-row:1_/_3] [grid-column:2] self-center text-right block text-[1.75rem] font-bold text-brand-navy leading-[1.25] mr-1 max-[640px]:[grid-row:1/3] max-[640px]:text-[26px]">{{ eventTotals().households }}</strong><small class="block text-[11px] text-secondary max-[1050px]:leading-[1.5] max-[640px]:mt-0.5">Según los registros asociados</small></div>
+        </article>
+        <article class="flex items-center bg-surface border-solid rounded-lg p-3 gap-[17px] border border-border-soft max-[1050px]:p-4.5 max-[1050px]:gap-3 max-[640px]:py-3.5">
+          <span class="dash-metric-icon amber grid place-items-center w-12 h-12 rounded-lg bg-warning-soft text-warning shrink-0 max-[1300px]:w-9.5 max-[1300px]:h-9.5"><tabler-icon icon="users" [size]="25" /></span>
+          <div class="grid grid-cols-[minmax(0,_1fr)_auto] flex-1 min-w-0 gap-x-3 max-[640px]:grid-cols-[1fr_auto]"><p class="text-[13px] text-secondary m-0 max-[640px]:self-center">Personas afectadas</p><strong class="[grid-row:1_/_3] [grid-column:2] self-center text-right block text-[1.75rem] font-bold text-brand-navy leading-[1.25] mr-1 max-[640px]:[grid-row:1/3] max-[640px]:text-[26px]">{{ eventTotals().people }}</strong><small class="block text-[11px] text-secondary max-[1050px]:leading-[1.5] max-[640px]:mt-0.5">Declarantes e integrantes identificados</small></div>
+        </article>
+      </section>
+
+      <label class="dash-search dash-event-search flex items-center border-solid rounded-lg text-secondary w-[min(440px,_100%)] max-w-full mb-5 py-2.5 px-3 gap-2 border border-border-soft focus-within:outline-solid focus-within:outline-brand-purple focus-within:outline-2 focus-within:outline-offset-2">
+        <tabler-icon icon="search" [size]="19" />
+        <input class="w-full border-solid outline-none text-[12px] bg-transparent border-0 border-current" aria-label="Buscar eventos" placeholder="Buscar evento, lugar, fecha o declarante…" [value]="eventQuery()" (input)="eventQuery.set($any($event.target).value)" />
+      </label>
+
+      <div class="dash-event-grid grid grid-cols-3 items-stretch gap-3.5 max-[1180px]:grid-cols-2 max-[720px]:grid-cols-1">
+        @for (event of filteredEvents(); track event.id) {
+          <article class="dash-event-card h-full overflow-hidden border-solid rounded-lg bg-surface border border-border-soft">
+            <button type="button" class="dash-event-summary grid grid-cols-[minmax(0,1fr)] [grid-template-rows:1fr_auto] items-start w-full h-full text-left text-ink py-4.5 px-5 gap-3.5 focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-offset-[-2px] focus-visible:outline-2 max-[720px]:p-4" aria-haspopup="dialog" (click)="toggleEvent(event.id)">
+              <div class="dash-event-title min-w-0">
+                <span class="dash-event-code inline-flex items-center min-h-6 rounded-lg text-[10px] font-bold mr-1.5 bg-surface-muted text-brand-purple py-[3px] px-2">{{ eventCode(event.id) }}</span>
+                <span class="dash-event-category inline-flex items-center min-h-6 rounded-lg text-[10px] font-bold bg-warning-soft text-warning py-[3px] px-2">{{ event.categoria || 'Por determinar' }}</span>
+                <h2 class="text-[17px] font-[650] text-brand-navy mt-2 mb-[7px] mx-0">{{ event.tipo || event.nombre }}</h2>
+                <p class="inline-flex items-center mr-4.5 ml-0 text-secondary text-[12px] my-0 gap-[5px] max-[720px]:flex max-[720px]:mt-[5px] max-[720px]:mr-0"><tabler-icon class="text-brand-purple" icon="map-pin" [size]="16" /> {{ event.municipio || 'Ubicación pendiente' }}{{ event.departamento ? ' · ' + event.departamento : '' }}</p>
+                <p class="inline-flex items-center mr-4.5 ml-0 text-secondary text-[12px] my-0 gap-[5px] max-[720px]:flex max-[720px]:mt-[5px] max-[720px]:mr-0"><tabler-icon class="text-brand-purple" icon="calendar" [size]="16" /> {{ event.fecha ? (event.fecha | date:'dd/MM/yyyy') : 'Fecha pendiente' }}{{ event.hora ? ' · ' + event.hora : '' }}</p>
+              </div>
+              <div class="dash-event-counts [grid-column:1/-1] grid grid-cols-3 items-center pt-3 border-t border-solid border-t-divider-soft gap-2">
+                <span class="min-w-0 text-secondary text-[10px] text-center"><strong class="block mb-0.5 text-brand-navy text-[20px]">{{ event.declarations }}</strong> registros</span>
+                <span class="min-w-0 text-secondary text-[10px] text-center"><strong class="block mb-0.5 text-brand-navy text-[20px]">{{ event.households }}</strong> hogares</span>
+                <span class="min-w-0 text-secondary text-[10px] text-center"><strong class="block mb-0.5 text-brand-navy text-[20px]">{{ event.affectedPeople }}</strong> personas</span>
+              </div>
+            </button>
+          </article>
+        } @empty {
+          <div class="dash-empty text-center [grid-column:1/-1] w-full py-12 px-5"><h3 class="text-[16px] font-[650] text-brand-navy mt-3 mb-2 mx-0">No se encontraron eventos</h3><p class="text-[13px] text-secondary mb-3.5">Pruebe otra ubicación, fecha o nombre.</p><button class="dash-action inline-flex items-center border-solid text-brand-navy text-[12px] bg-surface py-2 px-2.5 gap-1.5 border border-border-soft rounded-md hover:bg-surface-muted hover:border-brand-purple focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3" (click)="eventQuery.set('')">Limpiar búsqueda</button></div>
+        }
+      </div>
+
+      <dialog #eventDialog class="dash-event-dialog m-auto w-[min(760px,calc(100%_-_48px))] max-w-none max-h-[calc(100dvh_-_48px)] overflow-visible border-solid rounded-lg bg-transparent text-ink p-0 border-0 border-current max-[720px]:w-[calc(100%_-_24px)] max-[720px]:max-h-[calc(100dvh_-_24px)] backdrop:bg-overlay" aria-labelledby="event-modal-title" (click)="closeEventModal()" (close)="expandedEvent.set(null)">
+        @if (selectedEvent(); as event) {
+          <section class="dash-event-modal relative max-h-[calc(100dvh_-_48px)] overflow-y-auto rounded-lg bg-surface shadow-dialog max-[720px]:max-h-[calc(100dvh_-_24px)]" (click)="$event.stopPropagation()">
+            <button type="button" class="dash-event-modal-close absolute top-4 right-4 z-1 grid w-9 h-9 place-items-center rounded-lg bg-surface-muted text-brand-navy focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-2" aria-label="Cerrar información del evento" (click)="closeEventModal()"><tabler-icon icon="x" [size]="21" /></button>
+            <header class="dash-event-modal-header pt-6 pr-16 pb-4.5 pl-6 max-[720px]:pt-5 max-[720px]:pr-14 max-[720px]:pb-4 max-[720px]:pl-4.5">
+              <div><span class="dash-event-code inline-flex items-center min-h-6 rounded-lg text-[10px] font-bold mr-1.5 bg-surface-muted text-brand-purple py-[3px] px-2">{{ eventCode(event.id) }}</span><span class="dash-event-category inline-flex items-center min-h-6 rounded-lg text-[10px] font-bold bg-warning-soft text-warning py-[3px] px-2">{{ event.categoria || 'Por determinar' }}</span></div>
+              <h2 class="text-[22px] font-[650] text-brand-navy mt-3 mb-2 mx-0" id="event-modal-title">{{ event.tipo || event.nombre }}</h2>
+              <p class="inline-flex items-center mr-4.5 ml-0 text-secondary text-[12px] my-0 gap-[5px] max-[720px]:flex max-[720px]:mt-[5px]"><tabler-icon class="text-brand-purple" icon="map-pin" [size]="16" /> {{ event.municipio || 'Ubicación pendiente' }}{{ event.departamento ? ' · ' + event.departamento : '' }}</p>
+              <p class="inline-flex items-center mr-4.5 ml-0 text-secondary text-[12px] my-0 gap-[5px] max-[720px]:flex max-[720px]:mt-[5px]"><tabler-icon class="text-brand-purple" icon="calendar" [size]="16" /> {{ event.fecha ? (event.fecha | date:'dd/MM/yyyy') : 'Fecha pendiente' }}{{ event.hora ? ' · ' + event.hora : '' }}</p>
+            </header>
+            <div class="dash-event-modal-counts grid grid-cols-3 border-t border-solid border-t-divider-soft border-b border-b-divider-soft my-0 mx-6 py-4 px-0 gap-2 max-[720px]:mx-4.5">
+              <span class="text-secondary text-[11px] text-center"><strong class="block mb-0.5 text-brand-navy text-[22px]">{{ event.declarations }}</strong> registros</span>
+              <span class="text-secondary text-[11px] text-center"><strong class="block mb-0.5 text-brand-navy text-[22px]">{{ event.households }}</strong> hogares</span>
+              <span class="text-secondary text-[11px] text-center"><strong class="block mb-0.5 text-brand-navy text-[22px]">{{ event.affectedPeople }}</strong> personas</span>
+            </div>
+            <div class="dash-event-modal-body pt-5 pb-6 bg-surface px-6 max-[720px]:p-4.5">
+              <div class="dash-event-place grid grid-cols-2 mb-5 gap-4 max-[720px]:grid-cols-1">
+                <p class="flex flex-col text-[12px] text-secondary m-0 gap-1"><strong class="text-brand-navy text-[11px]">Lugar específico</strong><span>{{ event.sector || 'Sin sector informado' }}{{ event.direccion ? ' · ' + event.direccion : '' }}</span></p>
+                <p class="flex flex-col text-[12px] text-secondary m-0 gap-1"><strong class="text-brand-navy text-[11px]">Evento registrado</strong><span>{{ event.nombre }}</span></p>
+              </div>
+              <h3 class="text-[13px] font-[650] text-brand-navy mt-0 mb-2.5 mx-0">Registros a su cargo</h3>
+              @if ((event.records || []).length) {
+                <div class="dash-event-records grid grid-cols-2 gap-2 max-[720px]:grid-cols-1">
+                  @for (record of (event.records || []); track record.id) {
+                    <button class="focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-1 grid grid-cols-[minmax(0,1fr)_auto_18px] items-center rounded-lg bg-surface text-ink text-left py-[11px] px-3 gap-2.5" type="button" (click)="openEventRecord(record.id)">
+                      <span class="min-w-0"><strong class="block overflow-hidden text-ellipsis whitespace-nowrap text-brand-navy text-[12px]">{{ record.name || 'Declarante sin nombre' }}</strong><small class="block overflow-hidden text-ellipsis whitespace-nowrap mt-[3px] text-secondary text-[10px]">{{ record.document ? 'C.C ' + record.document : 'Documento pendiente' }}</small></span>
+                      <span class="dash-status inline-block text-[10px] font-semibold rounded-[20px] text-warning bg-warning-soft py-1 px-[9px] [&.done]:bg-success-soft [&.done]:text-success" [class.done]="record.status === 'completed'">{{ record.status === 'completed' ? 'Terminado' : 'Por terminar' }}</span>
+                      <tabler-icon icon="chevron-right" [size]="18" />
+                    </button>
+                  }
+                </div>
+              } @else {
+                <p class="dash-event-no-records mt-2 mb-0 text-secondary text-[11px] mx-0">Este evento no tiene registros asignados a su usuario.</p>
+              }
+              @if (event.declarations > event.myDeclarations) {
+                <p class="dash-event-access-note mt-2 mb-0 text-secondary text-[11px] pt-2.5 border-t border-solid border-t-divider-soft mx-0">Hay {{ event.declarations - event.myDeclarations }} registros adicionales gestionados por otros funcionarios.</p>
+              }
+            </div>
+          </section>
+        }
+      </dialog>
+
+    </section>
+  } @else {
+    <section class="domain-statistics mt-6" aria-label="Estadísticas de eventos y desplazamientos">
+      <section class="dash-metrics grid grid-cols-3 my-8 gap-5 max-[1300px]:gap-2.5 max-[900px]:grid-cols-1 max-[640px]:mb-4.5" aria-label="Resumen de eventos y personas">
+        @for (metric of domainStats().metrics; track metric.label) {
+          <article class="flex items-center bg-surface border-solid rounded-lg p-3 gap-[17px] border border-border-soft max-[1050px]:p-4.5 max-[1050px]:gap-3 max-[640px]:py-3.5">
+            <span class="dash-metric-icon grid place-items-center w-12 h-12 rounded-lg bg-surface-icon text-brand-purple shrink-0 max-[1300px]:w-9.5 max-[1300px]:h-9.5 [&.green]:bg-success-soft [&.green]:text-success [&.amber]:bg-warning-soft [&.amber]:text-warning" [class.green]="metric.tone === 'green'" [class.amber]="metric.tone === 'amber'"><tabler-icon [icon]="metric.icon" [size]="25" /></span>
+            <div class="grid grid-cols-[minmax(0,_1fr)_auto] flex-1 min-w-0 gap-x-3 max-[640px]:grid-cols-[1fr_auto]"><p class="text-[13px] text-secondary m-0 max-[640px]:self-center">{{ metric.label }}</p><strong class="[grid-row:1_/_3] [grid-column:2] self-center text-right block text-[1.75rem] font-bold text-brand-navy leading-[1.25] mr-1 max-[640px]:[grid-row:1/3] max-[640px]:text-[26px]">{{ metric.value }}</strong><small class="block text-[11px] text-secondary max-[1050px]:leading-[1.5] max-[640px]:mt-0.5">{{ metric.detail }}</small></div>
+          </article>
+        }
+      </section>
+      <nav class="dash-stat-tabs inline-flex mt-6 mb-4.5 rounded-lg bg-surface-soft mx-0 p-1 gap-1" aria-label="Categorías de estadísticas">
+        <button class="min-h-9 rounded-[calc(.5rem_-_2px)] text-secondary text-[13px] font-semibold py-2 px-4 [&.selected]:bg-surface [&.selected]:text-brand-navy [&.selected]:shadow-[0_1px_4px_#282a661a] focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-2" type="button" [class.selected]="statisticsTab() === 'overview'" [attr.aria-pressed]="statisticsTab() === 'overview'" (click)="statisticsTab.set('overview')">Panorama</button>
+        <button class="min-h-9 rounded-[calc(.5rem_-_2px)] text-secondary text-[13px] font-semibold py-2 px-4 [&.selected]:bg-surface [&.selected]:text-brand-navy [&.selected]:shadow-[0_1px_4px_#282a661a] focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-2" type="button" [class.selected]="statisticsTab() === 'displacement'" [attr.aria-pressed]="statisticsTab() === 'displacement'" (click)="statisticsTab.set('displacement')">Desplazamiento</button>
+        <button class="min-h-9 rounded-[calc(.5rem_-_2px)] text-secondary text-[13px] font-semibold py-2 px-4 [&.selected]:bg-surface [&.selected]:text-brand-navy [&.selected]:shadow-[0_1px_4px_#282a661a] focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-2" type="button" [class.selected]="statisticsTab() === 'current'" [attr.aria-pressed]="statisticsTab() === 'current'" (click)="statisticsTab.set('current')">Situación actual</button>
+      </nav>
+      <div class="dash-charts grid grid-cols-3 gap-4 max-[1050px]:grid-cols-2 max-[900px]:grid-cols-1">
+        @for (chart of visibleStatCharts(); track chart.title) {
+          <article class="dash-panel dash-chart bg-surface border-solid rounded-lg overflow-hidden p-5 border-0 border-current max-[640px]:px-4">
+            <h3 class="text-[15px] font-[650] text-brand-navy">{{ chart.title }}</h3><p class="text-[11px] text-secondary mt-1.5 mb-0 mx-0">{{ chart.subtitle }}</p>
+            @if (!chart.total) {
+              <p class="domain-empty text-[11px] text-secondary mt-1.5 mb-0 mx-0 py-7 px-0">Aún no hay datos disponibles para esta estadística.</p>
+            } @else if (chart.kind === 'pie') {
+              <div class="dash-pie-layout flex items-center justify-center min-h-52.5 flex-wrap gap-4 max-[1050px]:min-h-60 max-[640px]:gap-4.5">
+                <div class="dash-pie [background:var(--chart-fill)] w-[135px] rounded-full shrink-0 aspect-square max-[640px]:w-35" [style.--chart-fill]="chart.pie" role="img" [attr.aria-label]="chart.title + ': ' + chart.description"></div>
+                <div class="dash-legend text-[11px] min-w-40 flex-1">
+                  @for (row of chart.rows; track row.label) {
+                    <p class="flex items-center mb-[15px] gap-[7px]"><i class="w-[9px] h-[9px] bg-(--chart-color) rounded-[2px]" [style.--chart-color]="row.color"></i><span>{{ row.label }}</span><strong class="ml-auto whitespace-nowrap">{{ row.count }} · {{ row.percent | number:'1.0-1' }}%</strong></p>
+                  }
+                </div>
+              </div>
+            } @else {
+              <div class="dash-bars grid mt-5.5 gap-4">
+                @for (row of chart.rows; track row.label) {
+                  <div class="dash-bar-row grid grid-cols-[105px_1fr_18px] items-center text-[10px] text-secondary gap-2 max-[640px]:grid-cols-[115px_1fr_18px]"><span>{{ row.label }}</span><div class="dash-bar-track bg-surface-soft h-3.5 overflow-hidden rounded" aria-hidden="true"><div class="h-full w-(--progress-width) bg-(--chart-color) min-w-0 rounded" [style.--progress-width]="row.count / chart.max * 100 + '%'" [style.--chart-color]="row.color"></div></div><strong class="text-brand-navy">{{ row.count }}</strong></div>
+                }
+              </div>
+            }
+          </article>
+        }
+      </div>
+    </section>
+  }
+</main>

@@ -1,0 +1,91 @@
+/* Hoja global: carga la tipografía institucional, Tailwind y los estilos compartidos. */
+@import "@fontsource-variable/nunito-sans/wght.css";
+@import "tailwindcss" source(none);
+/* @source indica a Tailwind dónde buscar las clases utilizadas por las plantillas Angular. */
+@source "./app";
+@source "./index.html";
+/* @theme crea tokens reutilizables como bg-brand-purple o text-form-muted. */
+@theme {
+  --font-sans: "Nunito Sans Variable", "Nunito Sans", Verdana, sans-serif;
+
+  /* Global */
+  --color-brand-navy: #282a66;
+  --color-brand-purple: #6768b5;
+  --color-gov-blue: #3368cc;
+
+  /* Textos */
+  --color-ink: #333333;
+  --color-body: #555555;
+  --color-secondary: #696969;
+  --color-muted: #777777;
+  --color-placeholder: #888888;
+  --color-subtle: #929292;
+  --color-option: #56576f;
+  --color-caption: #696979;
+  --color-tab: #858585;
+  --color-step-muted: #a0a0aa;
+
+  /* Bordes y divisores */
+  --color-form-border: #c6c6c6;
+  --color-form-muted: #7c7c7c;
+  --color-border-strong: #aaaaaa;
+  --color-border-overlay: #c5c5d0;
+  --color-border-soft: #dedee7;
+  --color-border-disabled: #d7d7d7;
+  --color-step-border: #d5d5dc;
+  --color-divider: #e5e5e5;
+  --color-divider-soft: #ececf0;
+
+  /* Surfaces */
+  --color-surface: #ffffff;
+  --color-page: #ffffff;
+  --color-surface-soft: #f7f7fb;
+  --color-surface-muted: #f1f1fa;
+  --color-surface-selected: #e9e9f7;
+  --color-surface-icon: #ececf8;
+  --color-surface-disabled: #f2f2f5;
+  --color-surface-card: #fafafe;
+  --color-surface-card-hover: #f6f6fb;
+  --color-option-icon: #f0f1f8;
+  --color-progress-track: #e9eaf2;
+  --color-section-track: #dadae9;
+  --color-overlay: rgb(0 0 0 / 50%);
+
+  /* Género de los miembros */
+  --color-gender-male: #3b82f6;
+  --color-gender-female: #ec4899;
+  --color-gender-neutral: #16a34a;
+  --color-gender-diverse: #a855f7;
+
+  /* Estados semánticos */
+  --color-success: #176b35;
+  --color-success-muted: #3d7650;
+  --color-success-soft: #edf9f1;
+  --color-success-badge: #bfe9cb;
+  --color-warning: #745a00;
+  --color-warning-muted: #806d29;
+  --color-warning-icon: #9a6700;
+  --color-warning-soft: #fff8dc;
+  --color-danger: #b42318;
+  --color-danger-border: #d55b5b;
+  --color-danger-required: #ee6c6c;
+  --color-danger-soft: #fff0ee;
+
+  /* Elementos especiales */
+  --color-tooltip: #24265f;
+  --color-scroll: #8b8b8b;
+  --color-scroll-hover: #6f6f6f;
+  --color-highlight-border: #bbbb00;
+  --color-highlight-soft: #ffffd0;
+
+  /* Sombras reutilizables */
+  --shadow-popup: 0 12px 30px rgb(36 38 95 / 18%);
+  --shadow-event-menu: 0 14px 34px rgb(36 38 95 / 18%);
+  --shadow-modal: 0 12px 40px rgb(0 0 0 / 18%);
+  --shadow-tooltip: 0 6px 18px rgb(0 0 0 / 20%);
+  --shadow-dialog: 0 25px 50px -12px rgb(0 0 0 / 25%);
+  --shadow-toast: 0 20px 25px -5px rgb(0 0 0 / 10%), 0 8px 10px -6px rgb(0 0 0 / 10%);
+}
+
+/* Tailwind aplica el tema oscuro a partir de la preferencia guardada en HTML. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
