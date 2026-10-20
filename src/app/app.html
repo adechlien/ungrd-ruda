@@ -7,7 +7,6 @@
       <div class="group/field min-w-0 pt-2 mt-6 [&_.outlined-control]:h-13 [&_.outlined-control]:rounded-[10px] [&_.outlined-control]:px-4.5 [&_.outlined-control:has(>input)]:px-0 [&_.outlined-control>input]:px-4.5"><label class="relative z-1 -my-2 ml-3.5 flex min-h-0 w-fit max-w-[calc(100%-32px)] items-center gap-1 bg-surface px-[5px] text-xs leading-4 font-normal text-brand-navy [overflow-wrap:anywhere] group-focus-within/field:text-brand-purple" for="login-password">Contraseña</label><input class="h-13 w-full rounded-[10px] border border-border-overlay bg-surface px-4.5 py-3 text-ink outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-1" id="login-password" name="password" type="password" autocomplete="current-password" [(ngModel)]="loginPassword" required /></div>
       @if (recordStore.storageError()) { <p role="alert" class="mt-4 text-[13px] leading-[1.7] text-danger">{{ recordStore.storageError() }}</p> }
       <button class="mt-6.5 w-full rounded-lg bg-brand-purple p-[13px] text-white disabled:cursor-wait disabled:opacity-60" type="submit" [disabled]="recordStore.loading()">{{ recordStore.loading() ? 'Conectando…' : 'Ingresar' }}</button>
-      <p class="text-xs mt-2">peter@example.com - RudaDemo2026!</p>
     </form>
   </main>
 } @else {
