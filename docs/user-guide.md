@@ -25,7 +25,7 @@ Terminar un registro confirma que pasó las validaciones de la aplicación. No e
 3. Escribir la contraseña en el campo **Contraseña**.
 4. Pulsar **Ingresar** y esperar a que cargue la pantalla **Mis registros**.
 
-![Pantalla de inicio de sesión](img/01-login.png)
+![Pantalla de inicio de sesión](01-login.png)
 
 Para la demostración están disponibles dos cuentas con datos ficticios:
 
@@ -44,7 +44,7 @@ Si se escribe mal la contraseña más de 10 veces seguidas, hay que esperar un m
 2. Pulsar el nombre del usuario, en la esquina inferior izquierda.
 3. Pulsar **Cerrar sesión**.
 
-![Menú del usuario abierto](img/02-menu-usuario.png)
+![Menú del usuario abierto](02-menu-usuario.png)
 
 El menú muestra el nombre y el correo de la cuenta, un selector de **Preferencias** de apariencia (claro, oscuro o el del dispositivo) y la opción **Cerrar sesión**, en rojo.
 
@@ -54,7 +54,7 @@ La sesión dura 8 horas. Si vence, la aplicación pide ingresar de nuevo; lo que
 
 Al ingresar se abre **Mis registros**. A la izquierda está el menú con tres opciones: **Registros**, **Eventos** y **Estadísticas**. Abajo a la izquierda aparecen el nombre del usuario y la campana de **Avisos**.
 
-![Pantalla Mis registros](img/03-mis-registros.png)
+![Pantalla Mis registros](03-mis-registros.png)
 
 En pantallas pequeñas, como un celular, el menú se muestra como una barra fija en la parte inferior.
 
@@ -76,7 +76,7 @@ Debajo, cada registro aparece como una tarjeta con su estado, su código, el nom
 2. Usar las pestañas **Todos**, **Por terminar** o **Terminados** para filtrar por estado.
 3. Pulsar el ícono del embudo, a la derecha del buscador, para filtrar por tipo de evento u ordenar los resultados.
 
-![Panel de filtros abierto](img/04-filtros.png)
+![Panel de filtros abierto](04-filtros.png)
 
 Si un registro no aparece, conviene revisar la pestaña activa, el filtro de tipo de evento y el texto del buscador.
 
@@ -86,15 +86,15 @@ Muestra los eventos (los hechos que originaron los desplazamientos) y los hogare
 
 Solo se cuentan los registros **terminados**. Si la cuenta no tiene ninguno, la vista aparece vacía con el mensaje **No se encontraron eventos**.
 
-![Vista Eventos sin registros terminados](img/05-eventos-vacio.png)
+![Vista Eventos sin registros terminados](05-eventos-vacio.png)
 
 Cuando hay registros terminados, cada evento aparece como una tarjeta con su código (por ejemplo, **EVT-00013**), su categoría, su nombre, el lugar y la fecha, y tres cifras: **registros**, **hogares** y **personas**.
 
-![Vista Eventos con un evento](img/06-eventos-con-evento.png)
+![Vista Eventos con un evento](06-eventos-con-evento.png)
 
 Al hacer clic en la tarjeta se abre el detalle del evento. Muestra el lugar específico, el evento registrado y, en **Registros a su cargo**, la lista de declaraciones asociadas, cada una con su estado. La flecha de cada registro lo abre. La **X** cierra la ventana.
 
-![Detalle de un evento](img/07-detalle-evento.png)
+![Detalle de un evento](07-detalle-evento.png)
 
 ### Estadísticas
 
@@ -108,13 +108,13 @@ Los gráficos se organizan en tres pestañas:
 | Desplazamiento | Momento de la salida respecto al evento (antes, durante, después o salidas sucesivas), carácter de la salida (forzada, voluntaria, mixta o por verificar) y evolución del evento (repentino o lento). |
 | Situación actual | Tipo de alojamiento después del desplazamiento (albergue, arriendo, vivienda de un familiar, entre otros) y razón principal para no retornar. |
 
-![Estadísticas, pestaña Panorama](img/08-estadisticas-panorama.png)
+![Estadísticas, pestaña Panorama](08-estadisticas-panorama.png)
 
 ### Avisos
 
 La campana de la esquina inferior izquierda abre el panel de **Notificaciones**. Un punto sobre la campana indica que hay avisos. Hoy el panel informa cuántos registros están **por terminar** y recuerda que se pueden continuar desde **Registros**. El enlace **Ver mis registros** lleva al listado, y la **X** cierra el panel.
 
-![Panel de Notificaciones](img/09-notificaciones.png)
+![Panel de Notificaciones](09-notificaciones.png)
 
 ## 4. Crear un registro y guardar
 
@@ -123,7 +123,7 @@ La campana de la esquina inferior izquierda abre el panel de **Notificaciones**.
 3. Elegir el **Tipo de documento** y escribir el **Número de documento** del declarante.
 4. Completar los datos disponibles y pulsar **Guardar**.
 
-![Nuevo registro, sección Declaración](img/10-nuevo-registro.png)
+![Nuevo registro, sección Declaración](10-nuevo-registro.png)
 
 ### Partes de la pantalla del registro
 
@@ -143,7 +143,7 @@ Si faltan datos o hay errores, el panel muestra en amarillo **Revisión necesari
 
 El botón **Ver portada** abre una ventana de consulta sobre el registro RUDA. Tiene cuatro pestañas: **Información general**, **Definiciones**, **Reparación integral** y **Marco normativo**. Allí se encuentran el código del formato (F-RUDA-001, versión 5), la entidad responsable y las normas aplicables. Para cerrarla se pulsa la X de la esquina superior derecha.
 
-![Ventana Portada, pestaña Información general](img/11-portada.png)
+![Ventana Portada, pestaña Información general](11-portada.png)
 
 ### Requisito para guardar
 
@@ -191,7 +191,7 @@ Registrar el evento que causó la afectación, la certificación y los datos del
 - El **Municipio** se habilita después de elegir el **Departamento**.
 - El **Evento principal** se habilita después de elegir el **Tipo de evento**, y sus opciones dependen de él. **Mixto** permite elegir entre todos y **Por determinar** ofrece **Otro**.
 
-![Sección Evento](img/12-seccion-evento.png)
+![Sección Evento](12-seccion-evento.png)
 
 Las preguntas 35 a 38 recogen la certificación (fechas y entidad) y las preguntas 39 a 52 el desplazamiento (salida, origen, alojamiento y ubicación actual). Estas respuestas solo documentan la información; no generan un certificado.
 
@@ -203,7 +203,7 @@ Debajo del espacio de narración aparece un contador de caracteres.
 
 Más abajo están las **Preguntas guía por tipo de evento**. Cambian según el tipo de evento elegido en la sección Evento; un recuadro indica a qué tipo corresponden. Ayudan a organizar el relato y son opcionales.
 
-![Sección Narración de los hechos](img/13-seccion-narracion.png)
+![Sección Narración de los hechos](13-seccion-narracion.png)
 
 ### 5.4. Caracterización
 
@@ -213,9 +213,9 @@ La aplicación agrega al declarante como primer integrante del hogar. Su tarjeta
 
 Para agregar otro integrante, pulsar **+ Añadir miembro**, completar la ventana y guardar. Cancelar la ventana descarta los cambios de esa edición. A la derecha se muestra el número de miembros registrados.
 
-![Sección Caracterización del hogar](img/14-seccion-caracterizacion.png)
+![Sección Caracterización del hogar](14-seccion-caracterizacion.png)
 
-![Ventana Añadir miembro del hogar](img/15-anadir-miembro.png)
+![Ventana Añadir miembro del hogar](15-anadir-miembro.png)
 
 La ventana **Añadir miembro del hogar** pide, entre otros datos: apellidos y nombres, tipo y número de documento, fecha de nacimiento, género, estado civil, ocupación, escolaridad, EPS, nivel Sisbén, etnia, discapacidad y relación con el declarante. El único campo obligatorio es **Apellidos y nombres** (marcado con asterisco); el botón **Añadir** se habilita cuando está escrito. **Cancelar** cierra la ventana sin guardar.
 
@@ -229,7 +229,7 @@ Para registrar más de un bien, pulsar **Añadir otro registro** debajo del grup
 
 Hay que respetar la unidad de cada campo: los valores en pesos se escriben como número, sin puntos ni signo ($COP), y un valor en pesos no es lo mismo que un número de salarios mínimos.
 
-![Sección Bienes y patrimonio](img/16-seccion-bienes.png)
+![Sección Bienes y patrimonio](16-seccion-bienes.png)
 
 ### 5.6. Étnico-colectivo
 
@@ -238,7 +238,7 @@ Arriba aparece la pregunta **¿El declarante pertenece a una comunidad étnica o
 - Con el interruptor en **No**, las preguntas se ven pero quedan deshabilitadas y no cuentan para el avance ni impiden terminar.
 - Al activarlo, se habilitan las preguntas de comunidad, territorio, representante, afectaciones y seguimiento.
 
-![Sección Módulo étnico-colectivo con el interruptor en No](img/17-seccion-etnico.png)
+![Sección Módulo étnico-colectivo con el interruptor en No](17-seccion-etnico.png)
 
 Si en la pregunta 85 se indica que existe un acta o comunicado, se adjunta como se explica en la sección 6.
 
@@ -270,7 +270,7 @@ El botón **Terminar registro** aparece en gris mientras falten datos obligatori
 
 Mientras falte información, el botón permanece en gris y no se puede pulsar. El panel derecho muestra el aviso amarillo **Revisión necesaria** con el número de respuestas por completar o corregir. Cuando se corrigen, aparece **Información válida** y el botón se habilita. Al pulsarlo, la aplicación confirma que el registro quedó terminado y este pasa a la pestaña **Terminados** de **Mis registros**.
 
-![Registro completo con el botón Terminar registro habilitado](img/18-terminar-habilitado.png)
+![Registro completo con el botón Terminar registro habilitado](18-terminar-habilitado.png)
 
 El porcentaje de avance cuenta también las preguntas opcionales. Por eso un registro puede terminarse sin llegar al 100 %.
 
@@ -292,7 +292,7 @@ Los botones **Llenar parcialmente** y **Llenar por completo** completan el formu
 
 Los botones están en el panel derecho del registro, debajo del aviso de validación.
 
-![Botones Llenar parcialmente y Llenar por completo](img/19-botones-llenar.png)
+![Botones Llenar parcialmente y Llenar por completo](19-botones-llenar.png)
 
 Después de usarlos hay que revisar las secciones antes de pulsar **Terminar registro**. El número RUD no se copia, para no repetirlo entre hogares.
 
