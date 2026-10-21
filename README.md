@@ -182,4 +182,4 @@ La migración se comprobó primero en una copia aislada de la base local. Se ver
 
 La configuración está preparada en vercel.json y api/index.mjs. El build genera el contrato compartido y el frontend; no ejecuta migraciones ni inserta datos. Definir DATABASE_URL con la conexión de Neon con pooling y TLS; definir APP_ORIGIN si se usa un dominio personalizado. Ejecutar las migraciones y el seed de forma controlada contra la base de demo y verificar los flujos en la URL HTTPS de prueba. Las pruebas locales no sustituyen esa comprobación remota.
 
-No incluye administración de cuentas ni recuperación de contraseñas. El programa captura información de certificación y seguimiento; no expide certificaciones ni realiza trámites externos.
+No incluye administración de cuentas ni recuperación de contraseñas. El programa captura información de certificación y seguimiento; no expide certificaciones y tampoco realiza trámites externos.
