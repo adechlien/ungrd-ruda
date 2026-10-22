@@ -6,9 +6,9 @@ La referencia oficial de este proyecto es [RUDAM_F002_v8.xlsx](docs/RUDAM_F002_v
 
 - [Modelo físico oficial DBML](docs/modelo-ruda-v8.dbml).
 - [Modelo entidad–relación](docs/modelo-er.md).
-- [Modelo ER completo en PNG](docs/diagramas/modelo-er.png).
+- [Modelo ER completo en PNG](images/modelo-er.png).
 - [Casos de uso](docs/use-cases.md).
-- [Diagrama de casos de uso en PNG](docs/diagramas/casos-de-uso.png).
+- [Diagrama de casos de uso en PNG](images/casos-de-uso.png).
 - [Manual de sistema](docs/system-manual.md).
 - [Manual de usuario](docs/user-guide.md).
 - [Resultados de pruebas previas a Vercel](docs/pruebas-previas-vercel.md).
