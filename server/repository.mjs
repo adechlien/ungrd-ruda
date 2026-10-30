@@ -3,9 +3,8 @@ import { validateCapture, captureProgress, firstIncomplete, eventForType, GUIDE_
 
 const maps = readJson('./field-map.json');
 const columns = readJson('./model-columns.json');
-export class ApiError extends Error {
- constructor(status, message, issues = []) { super(message); this.status = status; this.issues = issues; }
-}
+import {ApiError} from './errors.mjs';
+export {ApiError} from './errors.mjs';
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const knownKeys = new Set(SECTION_SCHEMAS.flatMap((s, si) => s.groups.flatMap(g => g.fields.map(f => `section-${si + 1}-${f.id}`))));
 knownKeys.add('section-6-applies');
