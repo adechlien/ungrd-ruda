@@ -2,6 +2,7 @@ import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID, randomInt } from 'node:crypto';
 import { spawn } from 'node:child_process';
+import { gzipSync, deflateSync } from 'node:zlib';
 import { pool } from '../db.mjs';
 import { getStatistics } from '../statistics.mjs';
 import { SECTION_SCHEMAS, EVENT_PRINCIPALS_BY_TYPE, applicable, GUIDE_CODES, syncDeclarant } from '../generated/contract.mjs';
@@ -32,6 +33,17 @@ test('Autenticación, separación de funcionarios y eventos con varios hogares',
  const events=await request('/events','GET',null,laura);assert.equal(events.status,200);assert.ok(events.body.some(e=>e.households>1));
  assert.equal(events.body.reduce((total,event)=>total+event.declarations,0),a.body.filter(record=>record.status==='completed').length);
 });
+test('El procesamiento de JSON comprimido rechaza datos dañados sin detener la API',async()=>{
+ for(const [encoding,compress] of [['gzip',gzipSync],['deflate',deflateSync]]) {
+  const valid=compress(Buffer.from('{}'));
+  const send=body=>fetch(base+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json','Content-Encoding':encoding},body});
+  assert.equal((await send(valid)).status,400);
+  const damaged=await send(Buffer.concat([valid,Buffer.from('trailing-invalid-data')]));
+  assert.equal(damaged.status,400);
+  assert.equal((await request('/health')).status,200);
+ }
+});
+
 test('Estadísticas: agregados por funcionario sin descargar capturas ni datos personales',async()=>{
  assert.equal((await request('/statistics')).status,401);
  const sorted=rows=>[...rows].sort((a,b)=>a.label.localeCompare(b.label));
