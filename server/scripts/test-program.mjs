@@ -23,7 +23,7 @@ try {
  await run(['server/seed.mjs']);
  // A second execution checks that migrations and seed are repeatable.
  await run(['server/migrate.mjs']);await run(['server/seed.mjs']);
- const files=['server/tests/form-contract.test.mjs','server/tests/statistics.test.mjs','server/tests/v8-contract.test.mjs','server/tests/integration.test.mjs'];
+ const files=['server/tests/form-contract.test.mjs','server/tests/statistics.test.mjs','server/tests/v8-contract.test.mjs','server/tests/integration.test.mjs','server/tests/bootstrap.test.mjs'];
  if(process.argv.includes('--deployment'))files.push('server/tests/deployment.test.mjs');
  await run(['--test',...files]);
 } finally {
