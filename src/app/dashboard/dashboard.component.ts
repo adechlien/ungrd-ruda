@@ -1,13 +1,16 @@
 import { buildStatistics, StatisticsGroup } from './statistics';
-import { Component, ElementRef, HostListener, ViewChild, computed, inject, input, output, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild, computed, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { TablerIconComponent } from '@tabler/icons-angular';
 import { EVENT_LABELS, FormRecord, FormRecordsService } from '../core/services/form-records.service';
 import { CustomSelectComponent } from '../shared/controls/custom-select.component';
+import { StatisticsService } from '../core/services/statistics.service';
+import { EMPTY_STATISTICS } from '../core/models/statistics';
 
 @Component({
   selector: 'app-dashboard',
   imports: [DatePipe, DecimalPipe, TablerIconComponent, CustomSelectComponent],
+  providers: [StatisticsService],
   templateUrl: './dashboard.component.html',
   host: { class: 'block min-h-[65vh] bg-surface text-ink' },
 })
@@ -19,6 +22,16 @@ export class DashboardComponent {
   readonly allEventTypesLabel = 'Todos los tipos de evento';
   readonly sortIcons: Record<string, string> = { Fecha: 'calendar', Sitio: 'map-pin', Evento: 'cloud-storm' };
   readonly store = inject(FormRecordsService);
+  readonly statistics = inject(StatisticsService);
+  constructor() {
+    effect(() => {
+      const tab = this.tab();
+      untracked(() => {
+        if (tab === 'stats') void this.statistics.load();
+        else void this.store.ensureRecords();
+      });
+    });
+  }
   readonly openForm = output<FormRecord>();
   readonly createForm = output<void>();
   readonly eventFilter = signal('');
@@ -64,7 +77,7 @@ export class DashboardComponent {
   readonly visible = computed(() =>
     this.filtered().slice((this.page() - 1) * this.pageSize, this.page() * this.pageSize),
   );
-  readonly domainStats = computed(() => buildStatistics(this.store.records(), this.store.events()));
+  readonly domainStats = computed(() => buildStatistics(this.statistics.summary() ?? EMPTY_STATISTICS));
   readonly filteredEvents = computed(() => {
     const query = this.normalize(this.eventQuery());
     return this.store.events().filter(event => this.normalize([

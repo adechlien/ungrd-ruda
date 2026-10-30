@@ -4,6 +4,7 @@ import { pool } from './db.mjs';
 import { hashToken, verifyPassword } from './auth.mjs';
 import { ApiError, listForms, listEvents, saveForm } from './repository.mjs';
 import { saveActa, getActa, deleteActa } from './acta.mjs';
+import { getStatistics } from './statistics.mjs';
 export const app=express();
 app.disable('x-powered-by');
 if(process.env.TRUST_PROXY) {
@@ -50,6 +51,7 @@ app.get('/api/auth/me',(req,res)=>res.json(publicActor(req.actor)));
 app.post('/api/auth/logout',async(req,res)=>{await pool.query('DELETE FROM sesion WHERE token_hash=$1',[hashToken(req.token)]);res.clearCookie('ruda_session',{path:'/api'});res.sendStatus(204);});
 app.get('/api/forms',async(req,res)=>res.json(await listForms(req.actor)));
 app.get('/api/events',async(req,res)=>res.json(await listEvents(req.actor)));
+app.get('/api/statistics',async(req,res)=>res.json(await getStatistics(req.actor)));
 app.put('/api/forms/:id',async(req,res)=>res.json(await saveForm(req.actor,req.params.id,req.body,false)));
 app.post('/api/forms/:id/finish',async(req,res)=>res.json(await saveForm(req.actor,req.params.id,req.body,true)));
 app.put('/api/forms/:id/acta',express.raw({type:'application/octet-stream',limit:'4mb'}),async(req,res)=>res.json(await saveActa(req.actor,req.params.id,req.query.nombre,req.body)));

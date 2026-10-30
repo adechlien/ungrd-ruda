@@ -14,15 +14,19 @@
     </div>
     @if (tab() === 'forms') {
       <div class="dash-heading-actions flex items-center gap-2.5 max-[900px]:flex-wrap max-[640px]:items-stretch max-[640px]:flex-col">
-        <button class="dash-primary inline-flex items-center justify-center bg-brand-purple border-solid rounded-lg text-white text-[14px] font-semibold whitespace-nowrap py-[13px] px-[19px] gap-[9px] border border-brand-purple hover:bg-brand-navy focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3" (click)="createForm.emit()">
+        <button class="dash-primary inline-flex items-center justify-center bg-brand-purple border-solid rounded-lg text-white text-[14px] font-semibold whitespace-nowrap py-[13px] px-[19px] gap-[9px] border border-brand-purple hover:bg-brand-navy focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3 disabled:opacity-60" [disabled]="store.recordsLoading()" (click)="createForm.emit()">
           <tabler-icon icon="plus" [size]="20" /> Nuevo registro
         </button>
       </div>
     }
   </section>
 
-  @if (store.storageError()) {
+  @if (tab() !== 'stats' && store.storageError()) {
     <p class="dash-error bg-danger-soft text-danger text-[13px] p-3" role="alert">{{ store.storageError() }}</p>
+    <button type="button" class="rounded-lg px-4 py-2 text-sm text-brand-purple focus-visible:outline-2 focus-visible:outline-offset-2" (click)="store.ensureRecords(true)">Volver a intentar</button>
+  }
+  @if (tab() !== 'stats' && store.recordsLoading()) {
+    <p class="mt-6 text-sm text-secondary" role="status">Cargando registros…</p>
   }
   @if (tab() === 'forms') {
   <section class="dash-metrics grid grid-cols-3 mt-8 mb-20 gap-5 max-[1300px]:gap-2.5 max-[900px]:grid-cols-1 max-[640px]:mb-4.5" aria-label="Resumen de mis registros">
@@ -263,6 +267,14 @@
 
     </section>
   } @else {
+    @if (statistics.loading()) {
+      <p class="mt-6 text-sm text-secondary" role="status">Cargando estadísticas…</p>
+    } @else if (statistics.error()) {
+      <div class="mt-6">
+        <p class="dash-error bg-danger-soft text-danger text-[13px] p-3" role="alert">{{ statistics.error() }}</p>
+        <button type="button" class="rounded-lg px-4 py-2 text-sm text-brand-purple focus-visible:outline-2 focus-visible:outline-offset-2" (click)="statistics.load()">Volver a intentar</button>
+      </div>
+    } @else if (statistics.summary()) {
     <section class="domain-statistics mt-6" aria-label="Estadísticas de eventos y desplazamientos">
       <section class="dash-metrics grid grid-cols-3 my-8 gap-5 max-[1300px]:gap-2.5 max-[900px]:grid-cols-1 max-[640px]:mb-4.5" aria-label="Resumen de eventos y personas">
         @for (metric of domainStats().metrics; track metric.label) {
@@ -303,5 +315,6 @@
         }
       </div>
     </section>
+    }
   }
 </main>

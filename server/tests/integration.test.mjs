@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { randomUUID, randomInt } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { pool } from '../db.mjs';
+import { getStatistics } from '../statistics.mjs';
 import { SECTION_SCHEMAS, EVENT_PRINCIPALS_BY_TYPE, applicable, GUIDE_CODES, syncDeclarant } from '../generated/contract.mjs';
 const base='http://127.0.0.1:4311/api';let child,laura,daniel,complete;const ids=[];const documents=[];const eventIds=[];
 async function request(path,method='GET',data,cookie){const response=await fetch(base+path,{method,headers:{...(data?{'Content-Type':'application/json'}:{}),...(cookie?{Cookie:cookie}:{})},body:data?JSON.stringify(data):undefined});const body=response.status===204?null:await response.json();return {status:response.status,body,cookie:response.headers.get('set-cookie')?.split(';')[0]};}
@@ -31,6 +32,69 @@ test('Autenticación, separación de funcionarios y eventos con varios hogares',
  const events=await request('/events','GET',null,laura);assert.equal(events.status,200);assert.ok(events.body.some(e=>e.households>1));
  assert.equal(events.body.reduce((total,event)=>total+event.declarations,0),a.body.filter(record=>record.status==='completed').length);
 });
+test('Estadísticas: agregados por funcionario sin descargar capturas ni datos personales',async()=>{
+ assert.equal((await request('/statistics')).status,401);
+ const sorted=rows=>[...rows].sort((a,b)=>a.label.localeCompare(b.label));
+ const counts=values=>{
+  const result=new Map();
+  for(const value of values){const label=value?.trim()||'Sin información';result.set(label,(result.get(label)||0)+1);}
+  return sorted([...result].map(([label,count])=>({label,count})));
+ };
+ for(const cookie of [laura,daniel]) {
+  const forms=(await request('/forms','GET',null,cookie)).body;
+  const events=(await request('/events','GET',null,cookie)).body;
+  const response=await request('/statistics','GET',null,cookie);assert.equal(response.status,200);
+  const {totals,breakdowns}=response.body;
+  const people=new Map();
+  for(const r of [...forms].sort((a,b)=>b.savedAt.localeCompare(a.savedAt)||a.id.localeCompare(b.id))) {
+   const key=(r.answers['section-1-1']||'CC')+':'+r.answers['section-1-2'];
+   if(!people.has(key))people.set(key,r);
+  }
+  const displaced=forms.filter(r=>/^\d{4}-\d{2}-\d{2}$/.test(r.answers['section-2-39']||'')&&!Number.isNaN(Date.parse(r.answers['section-2-39'])));
+  assert.deepEqual(totals,{events:events.length,displacements:displaced.length,declarants:people.size});
+  assert.deepEqual(sorted(breakdowns.sex),counts([...people.values()].map(r=>r.answers['section-1-8'])));
+  const fields={eventTypes:'30',departureMoment:'45',accommodation:'47',noReturn:'52',departureCharacter:'46',evolution:'31'};
+  for(const [key,field] of Object.entries(fields))assert.deepEqual(sorted(breakdowns[key]),counts(displaced.map(r=>r.answers['section-2-'+field])),key);
+  assert.deepEqual(sorted(breakdowns.origins),counts(displaced.map(r=>r.answers['section-2-42']?r.answers['section-2-42']+(r.answers['section-2-41']?' · '+r.answers['section-2-41']:''):'')));
+  assert.deepEqual(Object.keys(response.body).sort(),['breakdowns','totals']);
+  for(const rows of Object.values(breakdowns))assert.ok(rows.every(row=>Object.keys(row).sort().join(',')==='count,label'));
+  assert.ok(Buffer.byteLength(JSON.stringify(response.body))<Buffer.byteLength(JSON.stringify(forms)));
+  const alternate=await request('/statistics?funcionarioId=999999','GET',null,cookie);
+  assert.deepEqual(alternate.body.totals,totals);
+ }
+});
+
+test('Estadísticas: una cuenta sin capturas devuelve ceros y categorías vacías',async()=>{
+ const result=await getStatistics({id_funcionario:0});
+ assert.deepEqual(result.totals,{events:0,displacements:0,declarants:0});
+ assert.ok(Object.values(result.breakdowns).every(rows=>rows.length===0));
+});
+
+test('Estadísticas: edición y duplicados usan la última captura y conservan el aislamiento',async()=>{
+ const initial=(await request('/statistics','GET',null,laura)).body;
+ const other=(await request('/statistics','GET',null,daniel)).body;
+ const doc=String(randomInt(700000000,799999999));documents.push(doc);
+ const one=fresh(complete),two=fresh(complete);
+ for(const r of [one,two])r.answers['section-1-2']=doc;
+ one.answers['section-1-8']='Masculino';delete one.answers['section-2-39'];
+ two.answers['section-1-8']='Femenino';
+ assert.equal((await request('/forms/'+one.id,'PUT',one,laura)).status,200);
+ const second=await request('/forms/'+two.id,'PUT',two,laura);assert.equal(second.status,200);
+ const count=(result,label)=>result.breakdowns.sex.find(row=>row.label===label)?.count||0;
+ const current=(await request('/statistics','GET',null,laura)).body;
+ assert.equal(current.totals.declarants,initial.totals.declarants+1);
+ assert.equal(current.totals.displacements,initial.totals.displacements+1);
+ assert.equal(current.totals.events,initial.totals.events);
+ assert.equal(count(current,'Femenino'),count(initial,'Femenino')+1);
+ second.body.answers['section-1-8']='Masculino';
+ assert.equal((await request('/forms/'+two.id,'PUT',second.body,laura)).status,200);
+ const updated=(await request('/statistics','GET',null,laura)).body;
+ assert.deepEqual(updated.totals,current.totals);
+ assert.equal(count(updated,'Femenino'),count(initial,'Femenino'));
+ assert.equal(count(updated,'Masculino'),count(initial,'Masculino')+1);
+ assert.deepEqual((await request('/statistics','GET',null,daniel)).body.totals,other.totals);
+});
+
 test('Borrador solo con documento; identificador estable y primera sección pendiente',async()=>{
  const id=randomUUID();ids.push(id);const doc=String(randomInt(700000000,799999999));documents.push(doc);
  const payload={revisionRuda:8,answers:{},story:'',selectedEvent:'other',members:[],eventId:null,version:0};

@@ -22,6 +22,8 @@ export class FormRecordsService {
  readonly loading=signal(true);
  readonly storageError=signal('');
  readonly saving=signal(false);
+ readonly recordsLoading=signal(false);
+ private recordsReady=false;
  constructor(){void this.bootstrap();}
  private async request<T>(url:string,method='GET',data?:unknown):Promise<T>{
   let response:Response;
@@ -41,19 +43,30 @@ export class FormRecordsService {
   }));
  }
  async bootstrap():Promise<void>{
-  try{this.user.set(await this.request<SessionUser>('/auth/me'));await this.refresh();}
+  try{this.user.set(await this.request<SessionUser>('/auth/me'));}
   catch(error){if(!(error instanceof ApiFailure && error.status===401))this.storageError.set((error as Error).message);}
   finally{this.loading.set(false);}
  }
  async login(email:string,password:string):Promise<boolean>{
   this.loading.set(true);this.storageError.set('');
-  try{this.user.set(await this.request<SessionUser>('/auth/login','POST',{email,password}));await this.refresh();return true;}
+  try{this.user.set(await this.request<SessionUser>('/auth/login','POST',{email,password}));return true;}
   catch(error){this.storageError.set((error as Error).message);return false;}
   finally{this.loading.set(false);}
  }
- async logout():Promise<void>{await this.request('/auth/logout','POST');this.user.set(null);this.records.set([]);this.events.set([]);this.storageError.set('');}
+ async logout():Promise<void>{await this.request('/auth/logout','POST');this.user.set(null);this.records.set([]);this.events.set([]);this.recordsReady=false;this.recordsLoading.set(false);this.storageError.set('');}
+ async ensureRecords(force=false):Promise<void>{
+  const actor=this.user();
+  if(!actor||(!force&&this.recordsReady)||this.recordsLoading())return;
+  this.recordsLoading.set(true);
+  try{await this.refresh();}
+  catch(error){if(this.user()===actor)this.storageError.set((error as Error).message);}
+  finally{if(this.user()===actor)this.recordsLoading.set(false);}
+ }
  async refresh():Promise<void>{
-  const [records,events]=await Promise.all([this.request<FormRecord[]>('/forms'),this.request<SharedEvent[]>('/events')]);this.records.set(records);this.events.set(this.normalizeEvents(events));this.storageError.set('');
+  const actor=this.user();
+  const [records,events]=await Promise.all([this.request<FormRecord[]>('/forms'),this.request<SharedEvent[]>('/events')]);
+  if(this.user()!==actor)return;
+  this.records.set(records);this.events.set(this.normalizeEvents(events));this.recordsReady=true;this.storageError.set('');
  }
  async refreshEvents():Promise<void>{try{this.events.set(this.normalizeEvents(await this.request<SharedEvent[]>('/events')));}catch{/* Las declaraciones ya guardadas permanecen disponibles. */}}
  async uploadActa(id:string,file:File):Promise<ActaFile>{
