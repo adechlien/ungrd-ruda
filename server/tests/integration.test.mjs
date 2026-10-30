@@ -225,14 +225,14 @@ test('Terminar exige cada campo obligatorio aplicable; fallo no escribe y comple
  const audit=await request('/forms/'+r.id+'/history','GET',null,laura);assert.equal(audit.body.length,2);
  const stale=await request('/forms/'+r.id,'PUT',saved.body,laura);assert.equal(stale.status,409);
 });
-test('Editar una declaración no cambia otra del mismo declarante ni el evento compartido',async()=>{
+test('Editar un registro no cambia otro del mismo declarante ni el evento compartido',async()=>{
  const doc=String(randomInt(700000000,799999999));documents.push(doc);
  const one=fresh(complete),two=fresh(complete);one.answers['section-1-2']=doc;two.answers['section-1-2']=doc;
  const first=(await request('/forms/'+one.id,'PUT',one,laura)).body;
  const second=(await request('/forms/'+two.id,'PUT',two,laura)).body;
  const persons=await pool.query('SELECT DISTINCT id_persona_declarante FROM registro WHERE id_registro=ANY($1::uuid[])',[[one.id,two.id]]);assert.equal(persons.rowCount,1);
  const eventBefore=(await pool.query('SELECT * FROM evento_especifico WHERE id_evento_especifico=$1',[first.eventId])).rows[0];
- first.answers['section-1-5']='Nombre corregido';first.answers['section-2-28']='Dirección corregida de una sola declaración';
+ first.answers['section-1-5']='Nombre corregido';first.answers['section-2-28']='Dirección corregida de un solo registro';
  assert.equal((await request('/forms/'+one.id,'PUT',first,laura)).status,200);
  const untouched=(await request('/forms','GET',null,laura)).body.find(r=>r.id===two.id);assert.deepEqual(untouched,second);
  assert.deepEqual((await pool.query('SELECT * FROM evento_especifico WHERE id_evento_especifico=$1',[first.eventId])).rows[0],eventBefore);
@@ -330,5 +330,6 @@ test('Actas: 4 MB aceptados y un byte adicional rechazado antes de guardar',asyn
  let response=await fetch(url,{method:'PUT',headers:{Cookie:laura,'Content-Type':'application/octet-stream'},body:bytes});assert.equal(response.status,200);
  assert.equal((await response.json()).bytes,bytes.length);
  response=await fetch(url,{method:'PUT',headers:{Cookie:laura,'Content-Type':'application/octet-stream'},body:Buffer.concat([bytes,Buffer.from('x')])});assert.equal(response.status,413);assert.match((await response.json()).message,/4 MB/);
+ await assert.rejects(pool.query('UPDATE archivo_registro SET contenido=$1 WHERE id_registro=$2',[Buffer.concat([bytes,Buffer.from('x')]),r.id]),{code:'23514'});
  const stored=(await pool.query('SELECT octet_length(contenido) AS n FROM archivo_registro WHERE id_registro=$1',[r.id])).rows[0];assert.equal(stored.n,bytes.length);
 });

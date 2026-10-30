@@ -62,7 +62,7 @@ app.get('/api/forms/:id/acta',async(req,res)=>{
 });
 app.delete('/api/forms/:id/acta',async(req,res)=>{await deleteActa(req.actor,req.params.id);res.sendStatus(204);});
 app.get('/api/forms/:id/history',async(req,res)=>{
- const own=await pool.query('SELECT 1 FROM registro WHERE id_registro=$1 AND id_funcionario=$2',[req.params.id,req.actor.id_funcionario]);if(!own.rowCount)throw new ApiError(404,'Declaración no encontrada.');
+ const own=await pool.query('SELECT 1 FROM registro WHERE id_registro=$1 AND id_funcionario=$2',[req.params.id,req.actor.id_funcionario]);if(!own.rowCount)throw new ApiError(404,'Registro no encontrado.');
  const r=await pool.query('SELECT version_registro AS version,estado,creado_en FROM auditoria_registro WHERE id_registro=$1 ORDER BY version_registro DESC',[req.params.id]);res.json(r.rows);
 });
 app.use('/api',(req,res)=>res.status(404).json({message:'Ruta no encontrada.'}));

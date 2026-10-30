@@ -5,7 +5,7 @@
       <p class="text-[13px] text-secondary m-0">
         {{
           tab() === 'forms'
-            ? 'Gestione sus declaraciones y continúe sus registros pendientes.'
+            ? 'Consulte sus registros y continúe los que estén pendientes.'
             : tab() === 'events'
               ? 'Consulte los hechos compartidos y los hogares vinculados a cada uno.'
               : 'Explore los eventos, desplazamientos y características de las personas declarantes.'
@@ -35,7 +35,7 @@
       <div class="grid grid-cols-[minmax(0,_1fr)_auto] flex-1 min-w-0 gap-x-3 max-[640px]:grid-cols-[1fr_auto]">
         <p class="text-[13px] text-secondary m-0 max-[640px]:self-center">Total de registros</p>
         <strong class="[grid-row:1_/_3] [grid-column:2] self-center text-right block text-[1.75rem] font-bold text-brand-navy leading-[1.25] mr-1 max-[640px]:[grid-row:1/3] max-[640px]:text-[26px]">{{ store.records().length }}</strong
-        ><small>Declaraciones registradas</small>
+        ><small>Registros guardados</small>
       </div>
     </article>
     <article class="flex items-center bg-surface border-solid rounded-lg p-3 gap-[17px] border border-border-soft max-[1050px]:p-4.5 max-[1050px]:gap-3 max-[640px]:py-3.5">

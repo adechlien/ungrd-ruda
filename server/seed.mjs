@@ -57,6 +57,6 @@ async function synchronizeDemoRecords(actor,records,{onlyWhenEmpty=false,documen
 const records=demoSeeds(SECTION_SCHEMAS);
 const createdForPeter=await synchronizeDemoRecords(peter,records,{onlyWhenEmpty:true});
 await synchronizeDemoRecords(gwen,records.slice(0,3),{onlyWhenEmpty:true,documentPrefix:'202030'});
-console.log(`${createdForPeter} declaraciones ficticias nuevas. Peter tiene ${(await listForms(peter)).length} registros.`);
+console.log(`${createdForPeter} registros ficticios nuevos. Peter tiene ${(await listForms(peter)).length} registros.`);
 console.log('Cuentas demo: peter@example.com y gwen@example.com / RudaDemo2026!');
 await pool.end();

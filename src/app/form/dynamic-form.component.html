@@ -2,7 +2,7 @@
 <app-form-section-layout [recordId]="recordId" [recordSummary]="recordSummary" (coverRequested)="coverRequested.emit()" [title]="schema?.title || ''" [subtitle]="schema?.subtitle || ''" [activeSection]="activeSection" [progress]="progress" (sectionChange)="sectionChange.emit($event)">
   @if (activeSection === 2) {
     <section class="my-8">
-      <label for="shared-event" class="mb-4.5 flex items-center gap-2 text-xl font-bold text-brand-purple max-sm:text-2xl">Evento asociado a esta declaración</label>
+      <label for="shared-event" class="mb-4.5 flex items-center gap-2 text-xl font-bold text-brand-purple max-sm:text-2xl">Evento asociado a este registro</label>
       <app-custom-select controlId="shared-event" [options]="sharedEventOptions" [optionIcons]="sharedEventIcons" [value]="selectedSharedEventLabel" placeholder="Registrar un evento nuevo" (valueChange)="chooseSharedEvent($event)" />
     </section>
   }
@@ -102,7 +102,7 @@
     <section class="relative max-h-[90vh] w-full max-w-5xl overflow-visible rounded-xl bg-surface p-6 shadow-dialog max-md:overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="member-modal-title" (click)="$event.stopPropagation()" (keydown.enter)="handleMemberEnter($event)">
       <button type="button" class="absolute right-4 top-4 grid size-9 place-items-center rounded-lg text-muted hover:bg-surface-muted" aria-label="Cerrar" (click)="memberModalOpen.set(false)"><tabler-icon icon="x" [size]="24" /></button>
       <h2 id="member-modal-title" class="m-0 text-2xl font-bold text-brand-navy">{{ editingMemberIndex() === null ? 'Añadir miembro del hogar' : memberNeedsCompletion(memberDraft()) ? 'Completar datos del declarante' : 'Editar miembro del hogar' }}</h2>
-      @if (memberNeedsCompletion(memberDraft())) { <p class="mb-0 mt-2 text-sm text-warning">Se incluyeron los datos de la declaración. Complete la información del hogar y guarde los cambios para terminar esta ficha.</p> }
+      @if (memberNeedsCompletion(memberDraft())) { <p class="mb-0 mt-2 text-sm text-warning">Se incluyeron los datos del registro. Complete la información del hogar y guarde los cambios para terminar esta ficha.</p> }
       <p class="mb-6 mt-2 text-sm text-muted">Complete la información del integrante. Al añadirlo se mostrará un resumen en la sección.</p>
       <div class="grid grid-cols-3 gap-4 max-md:grid-cols-2 max-sm:grid-cols-1">
         @for (field of memberFields; track field.id) {

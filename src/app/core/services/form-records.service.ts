@@ -68,7 +68,7 @@ export class FormRecordsService {
   if(this.user()!==actor)return;
   this.records.set(records);this.events.set(this.normalizeEvents(events));this.recordsReady=true;this.storageError.set('');
  }
- async refreshEvents():Promise<void>{try{this.events.set(this.normalizeEvents(await this.request<SharedEvent[]>('/events')));}catch{/* Las declaraciones ya guardadas permanecen disponibles. */}}
+ async refreshEvents():Promise<void>{try{this.events.set(this.normalizeEvents(await this.request<SharedEvent[]>('/events')));}catch{/* Los registros ya guardados permanecen disponibles. */}}
  async uploadActa(id:string,file:File):Promise<ActaFile>{
   const response=await fetch('/api/forms/'+id+'/acta?nombre='+encodeURIComponent(file.name),{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/octet-stream'},body:file});
   const body=await response.json();

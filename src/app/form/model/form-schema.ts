@@ -41,20 +41,20 @@ export const EVENT_PRINCIPALS_BY_TYPE: Record<string, string[]> = {
 
 export const SECTION_SCHEMAS: SectionSchema[] = [
   {
-    title: 'Declaración', subtitle: 'Datos del declarante y de la declaración', groups: [
+    title: 'Registro', subtitle: 'Datos del declarante y del registro', groups: [
       { title: 'Identificación del declarante', fields: [
-        q('0', 'Identificador único de la declaración', 'text', undefined, true, 'Identificador único generado por el sistema'),
+        q('0', 'Identificador único del registro', 'text', undefined, true, 'Identificador único generado por el sistema'),
         q('1', 'Tipo de documento', 'select', ['CC', 'CE', 'TI', 'RC', 'NUIP', 'Pasaporte'], true), q('2', 'Número de documento', 'text', undefined, true),
         q('3', 'Primer apellido', 'text', undefined, true), q('4', 'Segundo apellido', 'text', undefined, true), q('5', 'Primer nombre', 'text', undefined, true), q('6', 'Demás nombres'),
         q('7', 'Fecha de nacimiento', 'date', undefined, true), q('8', 'Sexo', 'select', ['Femenino', 'Masculino', 'Intersexual', 'Otro', 'Prefiere no responder'], true),
         q('9', 'Dirección de residencia o correspondencia', 'text', undefined, true), q('10', 'Barrio o vereda de residencia'),
         q('11', 'Departamento de residencia', 'select', undefined, true), q('12', 'Municipio de residencia', 'select', undefined, true), q('13', 'Teléfono'), q('14', 'Correo electrónico', 'email'),
       ]},
-      { title: 'Lugar de la declaración', fields: [
+      { title: 'Lugar del registro', fields: [
         q('15', 'Departamento', 'select', undefined, true), q('16', 'Municipio', 'select', undefined, true),
         q('17', 'Entidad receptora', 'select', ['Coordinación de Gestión del Riesgo', 'Personería municipal', 'Defensoría del Pueblo', 'Procuraduría General de la Nación', 'Autoridad ambiental territorial', 'UNGRD', 'Ministerio de Ambiente', 'Otro'], true),
         q('18', 'Dirección', 'text', undefined, true), q('19', 'Nombre del funcionario receptor', 'text', undefined, true), q('20', 'Identificación del funcionario', 'text', undefined, true),
-        q('21', 'Fecha de la declaración', 'date', undefined, true), q('22', 'Tipo de declaración', 'select', ['Individual', 'Hogar / familiar', 'Colectiva / comunitaria'], true),
+        q('21', 'Fecha del registro', 'date', undefined, true), q('22', 'Tipo de registro', 'select', ['Individual', 'Hogar / familiar', 'Colectiva / comunitaria'], true),
       ]},
     ],
   },
@@ -132,7 +132,7 @@ export const SECTION_SCHEMAS: SectionSchema[] = [
 
 // Datos del modal de portada
 export const COVER_INFO = {
-  title: 'Registro Único de Declaración',
+  title: 'Registro RUDA',
   code: 'F-RUDA-001', version: '5', effectiveDate: '7 de julio de 2026', law: 'Ley 2577 del 29 de mayo de 2026',
   complementaryRules: 'Ley 387 de 1997 · Ley 1448 de 2011 · Ley 1523 de 2012 · Decreto 2569 de 2000',
   jurisprudence: 'Corte Constitucional, Sentencia T-123 de 2024',

@@ -183,7 +183,7 @@ export class App {
     event: this.recordStore.events().find(event=>event.id===this.currentRecord()?.eventId)?.nombre || this.answers()['section-2-30'] || '',
   }));
   readonly sections = [
-    { number: 1, title: 'Declaración', enabled: true },
+    { number: 1, title: 'Registro', enabled: true },
     { number: 2, title: 'Evento', enabled: true },
     { number: 3, title: 'Narración', enabled: true, active: true },
     { number: 4, title: 'Caracterización', enabled: true },
