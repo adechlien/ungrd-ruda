@@ -19,6 +19,7 @@ try {
  await mkdir('tmp',{recursive:true});await writeFile('tmp/test-database.json',JSON.stringify({database:name}));
  await run(['server/scripts/build-contract.cjs']);
  await run(['server/migrate.mjs']);
+ await run(['--test','server/tests/schema.test.mjs']);
  await run(['server/seed.mjs']);
  // A second execution checks that migrations and seed are repeatable.
  await run(['server/migrate.mjs']);await run(['server/seed.mjs']);

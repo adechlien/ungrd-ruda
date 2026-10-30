@@ -11,7 +11,7 @@
     "test": "npm run test:contract",
     "contract:build": "node server/scripts/build-contract.cjs",
     "api": "npm run contract:build && node server/index.mjs",
-    "db:migrate": "npm run contract:build && node server/migrate.mjs",
+    "db:migrate": "node server/migrate.mjs",
     "db:seed": "npm run contract:build && node server/seed.mjs",
     "db:up": "docker compose up -d db",
     "test:api": "node server/scripts/test-program.mjs",

@@ -32,7 +32,7 @@ test('Las respuestas guardadas de un módulo deshabilitado no cuentan ni se vali
   assert.ok(validateCapture(on).some(issue => issue.section === 6));
 });
 
-test('Los registros anteriores sin switch conservan su activación por las respuestas', () => {
+test('El registro colectivo activa el módulo cuando no hay selección explícita', () => {
   assert.equal(ethnicApplies({}), false);
   assert.equal(ethnicApplies({ 'section-1-22': 'Colectiva / comunitaria' }), true);
   assert.equal(ethnicApplies({ 'section-2-37': 'Sí' }), false);
