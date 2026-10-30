@@ -4,3 +4,4 @@ server/migrations/*.sql -text
 *.xlsx binary
 *.png binary
 *.svg text eol=lf
+docker/*.sh text eol=lf

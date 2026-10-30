@@ -1,19 +1,175 @@
-name: ruda
+name: ungrd-ruda-development
+
+x-database-environment: &database-environment
+  PGHOST: db
+  PGPORT: "5432"
+  PGDATABASE: ${PGDATABASE:-ruda}
+  PGUSER: ${PGUSER:-ruda}
+  PGPASSWORD: ${PGPASSWORD:?Define PGPASSWORD en .env o en el entorno}
+  DATABASE_URL: ""
+  POSTGRES_URL: ""
+
+x-api-build: &api-build
+  context: .
+  target: development
+
+x-tools: &tools
+  image: postgres:17-bookworm
+  profiles: [tools]
+  environment: *database-environment
+  depends_on:
+    db:
+      condition: service_healthy
+  volumes:
+    - ./backups:/backups
+    - ./docker/database-tools.sh:/tools/database-tools.sh:ro
+  entrypoint: [sh, /tools/database-tools.sh]
+
 services:
   db:
-    image: postgres:17
+    image: postgres:17-bookworm
     environment:
-      POSTGRES_DB: ${PGDATABASE}
-      POSTGRES_USER: ${PGUSER}
-      POSTGRES_PASSWORD: ${PGPASSWORD}
-    ports:
-      - "127.0.0.1:54321:5432"
+      POSTGRES_DB: ${PGDATABASE:-ruda}
+      POSTGRES_USER: ${PGUSER:-ruda}
+      POSTGRES_PASSWORD: ${PGPASSWORD:?Define PGPASSWORD en .env o en el entorno}
     volumes:
-      - ruda_pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
-      interval: 3s
+      test: [CMD-SHELL, 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 5s
       timeout: 3s
       retries: 20
+      start_period: 10s
+  db-init:
+    image: ${COMPOSE_PROJECT_NAME}-api
+    environment: *database-environment
+    command: [node, server/migrate.mjs]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+  api:
+    build: *api-build
+    image: ${COMPOSE_PROJECT_NAME}-api
+    init: true
+    environment:
+      <<: *database-environment
+      NODE_ENV: development
+      API_HOST: 0.0.0.0
+      API_PORT: "4310"
+      TRUST_PROXY: "1"
+      APP_ORIGIN: ${APP_ORIGIN:-http://localhost:4305,http://127.0.0.1:4305}
+    command: [npm, run, api]
+    depends_on:
+      db:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:4310/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 6s
+      retries: 10
+      start_period: 15s
+    stop_grace_period: 20s
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./server
+          target: /app/server
+          initial_sync: true
+          ignore: [generated/]
+        - action: sync+restart
+          path: ./src/app/form/model
+          target: /app/src/app/form/model
+          initial_sync: true
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./package-lock.json
+  web:
+    build:
+      context: .
+      target: development
+    init: true
+    command: [node, node_modules/@angular/cli/bin/ng.js, serve, --host, 0.0.0.0, --port, "8080", --poll, "1000", --proxy-config, docker/proxy.conf.json]
+    ports:
+      - "${WEB_BIND_ADDRESS:-127.0.0.1}:${WEB_PORT:-4305}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:8080/').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+          initial_sync: true
+        - action: sync+restart
+          path: ./public
+          target: /app/public
+          initial_sync: true
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./package-lock.json
+        - action: rebuild
+          path: ./angular.json
+        - action: rebuild
+          path: ./tsconfig.json
+        - action: rebuild
+          path: ./tsconfig.app.json
+        - action: rebuild
+          path: ./docker/proxy.conf.json
+  seed:
+    image: ${COMPOSE_PROJECT_NAME}-api
+    profiles: [tools]
+    environment: *database-environment
+    command: [node, server/seed.mjs]
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+  backup:
+    <<: *tools
+    command: [backup]
+  bootstrap:
+    image: ${COMPOSE_PROJECT_NAME}-api
+    profiles: [tools]
+    env_file:
+      - path: .env.bootstrap
+        required: false
+    environment: *database-environment
+    command: [node, server/bootstrap.mjs]
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+  test:
+    build: *api-build
+    profiles: [tools]
+    # Las pruebas solo aceptan PostgreSQL local. Comparten la red de db y
+    # crean y eliminan su propia base temporal, sin publicar el puerto 5432.
+    network_mode: service:db
+    environment:
+      <<: *database-environment
+      PGHOST: 127.0.0.1
+      NODE_ENV: development
+      NG_CLI_ANALYTICS: "false"
+    command: [npm, run, test:predeploy]
+    depends_on:
+      db:
+        condition: service_healthy
+  restore:
+    <<: *tools
+    environment:
+      <<: *database-environment
+      RESTORE_FILE: ${RESTORE_FILE:-}
+      RESTORE_DATABASE: ${RESTORE_DATABASE:-}
+    command: [restore]
+
 volumes:
-  ruda_pgdata:
+  pgdata:

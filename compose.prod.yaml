@@ -1,0 +1,32 @@
+name: ungrd-ruda-production
+
+services:
+  db:
+    restart: unless-stopped
+  api:
+    build:
+      target: api
+    command: [node, server/index.mjs]
+    environment:
+      NODE_ENV: production
+      TRUST_PROXY: "2"
+      APP_ORIGIN: ${APP_ORIGIN:?Define APP_ORIGIN con el origen HTTPS publico}
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    develop: !reset null
+  web:
+    build:
+      target: web
+    command: !reset []
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1:8080/healthz]
+      start_period: 5s
+    develop: !reset null

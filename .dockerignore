@@ -1,0 +1,17 @@
+.git
+.vscode
+.angular
+node_modules
+dist
+tmp
+out-tsc
+coverage
+server/generated
+.env
+.env.*
+secrets
+backups
+*.dump
+*.backup
+*.log
+*.xlsx

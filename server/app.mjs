@@ -6,7 +6,11 @@ import { ApiError, listForms, listEvents, saveForm } from './repository.mjs';
 import { saveActa, getActa, deleteActa } from './acta.mjs';
 export const app=express();
 app.disable('x-powered-by');
-if(process.env.VERCEL)app.set('trust proxy',1);
+if(process.env.TRUST_PROXY) {
+ const hops=Number(process.env.TRUST_PROXY);
+ if(!Number.isInteger(hops)||hops<0)throw Error('TRUST_PROXY debe ser un numero entero no negativo.');
+ app.set('trust proxy',hops);
+} else if(process.env.VERCEL)app.set('trust proxy',1);
 const allowedOrigins=new Set([
  'http://localhost:4305','http://127.0.0.1:4305','http://localhost:4310','http://127.0.0.1:4310',
  'http://localhost:'+Number(process.env.API_PORT||4310),'http://127.0.0.1:'+Number(process.env.API_PORT||4310),
