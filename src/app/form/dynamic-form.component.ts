@@ -65,8 +65,6 @@ export class DynamicFormComponent {
   @Output() fieldChange = new EventEmitter<{ section: number; id: string; value: string }>();
   @Output() sharedEventChange = new EventEmitter<string>();
   @Output() ethnicChange = new EventEmitter<string>();
-  @Output() partialFillRequested = new EventEmitter<void>();
-  @Output() completeFillRequested = new EventEmitter<void>();
   @Output() sectionChange = new EventEmitter<number>();
   @Output() storyChange = new EventEmitter<string>();
   @Output() answerChange = new EventEmitter<{ index: number; value: string }>();

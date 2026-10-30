@@ -230,7 +230,7 @@ export class App {
   isSectionComplete(section:number):boolean {return this.validateSection(section).valid;}
 
   constructor() {
-    // La demostración solo permite el tema claro, incluida una preferencia anterior.
+    // Aplicar el tema claro también a las preferencias de sesiones anteriores.
     document.documentElement.dataset['theme'] = 'light';
     localStorage.setItem('ruda-theme', 'light');
     // Bloquear solo la raíz evita crear en body un contenedor de scroll que desplace la sidebar sticky.
@@ -264,41 +264,7 @@ export class App {
 
   setMembers(members:Record<string,string>[]):void {this.members.set(syncDeclarant(this.answers(),members));this.scheduleLocalSave();}
   setEthnic(value:string):void {this.answers.update(a=>({...a,'section-6-applies':value}));this.scheduleLocalSave();}
-  fillDemoRecord(complete:boolean):void {
-    const record=this.currentRecord();
-    const templates=this.recordStore.records().filter(item=>item.status==='completed'&&item.id!==record?.id);
-    if(!record||!templates.length){this.formMessage.set('No hay un registro completo disponible como plantilla de demostración.');return;}
-    const template=templates[Math.floor(Math.random()*templates.length)];
-    const identities=[['Elena','Navarro'],['Tomás','Cárdenas'],['Mariana','Vélez'],['Samuel','Pineda'],['Carolina','Salazar'],['David','Quintero']];
-    const [firstName,lastName]=identities[Math.floor(Math.random()*identities.length)];
-    const document=String(Math.floor(700000000+Math.random()*200000000));
-    const answers:Record<string,string>={...template.answers,
-      'section-1-0':record.id,'section-1-1':'CC','section-1-2':document,'section-1-3':lastName,'section-1-4':template.answers['section-1-4']||'Pérez','section-1-5':firstName,'section-1-6':'',
-      'section-1-19':this.recordStore.user()?.name||'','section-1-20':this.recordStore.user()?.document||'',
-      'section-1-21':new Date().toISOString().slice(0,10),
-      'section-4-53':'',
-    };
-    let story=template.story;
-    let members=(template.members||[]).map((member,index)=>({...member,
-      'member-name':index?member['member-name']:`${firstName} ${lastName}`,
-      'member-document':index?member['member-document']:document,
-    }));
-    if(!complete){
-      const protectedFields=new Set(['section-1-0','section-1-1','section-1-2','section-1-5','section-2-23','section-2-25','section-2-26','section-2-29','section-2-30']);
-      for(const key of Object.keys(answers))if(!protectedFields.has(key)&&Math.random()<0.48)delete answers[key];
-      delete answers['section-1-3'];
-      delete answers['guide-'+(GUIDE_CODES[eventForType(answers['section-2-30']||'')]?.[0]||'')];
-      story='';
-      if(Math.random()<0.6)members=[];
-    }
-    const selected=eventForType(answers['section-2-30']||'');
-    this.currentRecord.set({...record,eventId:template.eventId});
-    this.answers.set(answers);this.story.set(story);this.members.set(syncDeclarant(answers,members));this.selectedEvent.set(selected);
-    this.activeSection.set(firstIncomplete(this.capture()));
-    this.formMessage.set(complete?'Registro completado con datos de demostración. Revíselo antes de terminarlo.':'Se llenó una parte aleatoria del registro para probar el borrador.');
-    this.scheduleLocalSave();
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
+
   private scheduleLocalSave():void {
     this.revision++;this.dirty.set(true);this.savedLocallyAt.set(null);
     clearTimeout(this.localSaveTimer);

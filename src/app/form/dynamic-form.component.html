@@ -1,5 +1,5 @@
 <!-- Plantilla dinámica: usa @if, @for y @switch para construir cada sección a partir del esquema recibido. -->
-<app-form-section-layout [recordId]="recordId" [recordSummary]="recordSummary" (coverRequested)="coverRequested.emit()" [title]="schema?.title || ''" [subtitle]="schema?.subtitle || ''" [activeSection]="activeSection" [progress]="progress" (sectionChange)="sectionChange.emit($event)" (partialFillRequested)="partialFillRequested.emit()" (completeFillRequested)="completeFillRequested.emit()">
+<app-form-section-layout [recordId]="recordId" [recordSummary]="recordSummary" (coverRequested)="coverRequested.emit()" [title]="schema?.title || ''" [subtitle]="schema?.subtitle || ''" [activeSection]="activeSection" [progress]="progress" (sectionChange)="sectionChange.emit($event)">
   @if (activeSection === 2) {
     <section class="my-8">
       <label for="shared-event" class="mb-4.5 flex items-center gap-2 text-xl font-bold text-brand-purple max-sm:text-2xl">Evento asociado a esta declaración</label>

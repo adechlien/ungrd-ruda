@@ -34,7 +34,7 @@ export interface FormProgressState {
           </div>
         }
       </section>
-      <app-progress-sidebar [recordId]="recordId" [recordSummary]="recordSummary" class="col-span-2 min-w-0 max-[1160px]:col-span-1" [finish]="progress.finish" [totalAnswered]="progress.totalAnswered" [totalFields]="progress.totalFields" [totalPercentage]="progress.totalPercentage" [sectionAnswered]="progress.sectionAnswered" [sectionFields]="progress.sectionFields" [sectionPercentage]="progress.sectionPercentage" [validation]="progress.validation" (coverRequested)="coverRequested.emit()" (partialFillRequested)="partialFillRequested.emit()" (completeFillRequested)="completeFillRequested.emit()" />
+      <app-progress-sidebar [recordId]="recordId" [recordSummary]="recordSummary" class="col-span-2 min-w-0 max-[1160px]:col-span-1" [finish]="progress.finish" [totalAnswered]="progress.totalAnswered" [totalFields]="progress.totalFields" [totalPercentage]="progress.totalPercentage" [sectionAnswered]="progress.sectionAnswered" [sectionFields]="progress.sectionFields" [sectionPercentage]="progress.sectionPercentage" [validation]="progress.validation" (coverRequested)="coverRequested.emit()" />
     </div>
   `,
 })
@@ -47,7 +47,5 @@ export class FormSectionLayoutComponent {
   @Input() recordSummary: RecordSummary | null = null;
   @Output() coverRequested = new EventEmitter<void>();
   @Input() progress!: FormProgressState;
-  @Output() partialFillRequested = new EventEmitter<void>();
-  @Output() completeFillRequested = new EventEmitter<void>();
   @Output() sectionChange = new EventEmitter<number>();
 }

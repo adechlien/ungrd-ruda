@@ -10,8 +10,6 @@ export class ProgressSidebarComponent {
   @Input() recordId = '';
   @Input() recordSummary: RecordSummary | null = null;
   @Output() coverRequested = new EventEmitter<void>();
-  @Output() partialFillRequested = new EventEmitter<void>();
-  @Output() completeFillRequested = new EventEmitter<void>();
   @Input() totalAnswered = 0;
   @Input() finish: FinishProgress = { total: 0, completed: 0, pending: 0, corrections: 0, ready: false, percentage: 0 };
   @Input() totalFields = 0;
