@@ -49,7 +49,6 @@ Thumbs.db
 !.env.production.example
 !.env.bootstrap.example
 /secrets/
-.vercel/
 /backups/
 *.dump
 *.backup

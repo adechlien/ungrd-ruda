@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 try { process.loadEnvFile(resolve('.env')); } catch {}
 export const pool = new pg.Pool({
  connectionString:process.env.DATABASE_URL||process.env.POSTGRES_URL||undefined,
- max:process.env.VERCEL?3:10,
+ max:10,
  connectionTimeoutMillis:5000,
  idleTimeoutMillis:30000,
  allowExitOnIdle:true,

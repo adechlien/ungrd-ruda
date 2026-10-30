@@ -6,7 +6,6 @@
     "ng": "ng",
     "start": "ng serve --host 127.0.0.1 --port 4305 --proxy-config proxy.conf.json",
     "build": "ng build",
-    "build:vercel": "npm run contract:build && npm run build",
     "watch": "ng build --watch --configuration development",
     "test": "npm run test:contract",
     "contract:build": "node server/scripts/build-contract.cjs",
@@ -15,7 +14,7 @@
     "db:seed": "npm run contract:build && node server/seed.mjs",
     "db:up": "docker compose up -d db",
     "test:api": "node server/scripts/test-program.mjs",
-    "test:predeploy": "npm run build:vercel && node server/scripts/test-program.mjs --deployment",
+    "test:predeploy": "npm run contract:build && npm run build && node server/scripts/test-program.mjs",
     "test:contract": "npm run contract:build && node --test server/tests/form-contract.test.mjs server/tests/statistics.test.mjs server/tests/v8-contract.test.mjs"
   },
   "private": true,

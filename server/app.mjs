@@ -11,12 +11,11 @@ if(process.env.TRUST_PROXY) {
  const hops=Number(process.env.TRUST_PROXY);
  if(!Number.isInteger(hops)||hops<0)throw Error('TRUST_PROXY debe ser un numero entero no negativo.');
  app.set('trust proxy',hops);
-} else if(process.env.VERCEL)app.set('trust proxy',1);
+}
 const allowedOrigins=new Set([
  'http://localhost:4305','http://127.0.0.1:4305','http://localhost:4310','http://127.0.0.1:4310',
  'http://localhost:'+Number(process.env.API_PORT||4310),'http://127.0.0.1:'+Number(process.env.API_PORT||4310),
  ...(process.env.APP_ORIGIN||'').split(',').map(value=>value.trim()).filter(Boolean),
- ...[process.env.VERCEL_URL,process.env.VERCEL_BRANCH_URL].filter(Boolean).map(host=>'https://'+host),
 ]);
 app.use(express.json({limit:'1mb'}));
 app.use((req,res,next)=>{
@@ -39,7 +38,7 @@ app.post('/api/auth/login',async(req,res)=>{
  if(!r.rowCount || !verifyPassword(password,r.rows[0].password_hash))throw new ApiError(401,'Correo o contraseña incorrectos.');
  const token=randomBytes(32).toString('hex');
  await pool.query('INSERT INTO sesion(token_hash,id_usuario,expira_en) VALUES($1,$2,now()+interval \'8 hours\')',[hashToken(token),r.rows[0].id_usuario]);
- res.cookie('ruda_session',token,{httpOnly:true,sameSite:'strict',secure:process.env.NODE_ENV==='production'||Boolean(process.env.VERCEL),maxAge:8*3600000,path:'/api'});res.json(publicActor(r.rows[0]));
+ res.cookie('ruda_session',token,{httpOnly:true,sameSite:'strict',secure:process.env.NODE_ENV==='production',maxAge:8*3600000,path:'/api'});res.json(publicActor(r.rows[0]));
 });
 app.use('/api',async(req,res,next)=>{
  const token=(req.headers.cookie||'').split(';').map(v=>v.trim()).find(v=>v.startsWith('ruda_session='))?.split('=')[1];
