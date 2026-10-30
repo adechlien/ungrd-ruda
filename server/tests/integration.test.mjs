@@ -136,6 +136,68 @@ test('El evento conserva su categoría y actualiza sus detalles mientras no est�
  assert.equal((await request('/forms/'+r.id,'PUT',saved.body,laura)).status,200);
  assert.equal((await pool.query('SELECT fecha_inicio::text AS fecha FROM evento_especifico WHERE id_evento_especifico=$1',[event.id])).rows[0].fecha,'2026-05-02');
 });
+test('Un evento ajeno no se puede asociar al guardar ni al terminar y no revela sus datos',async()=>{
+ const privateRecord=fresh(complete);privateRecord.eventId=null;
+ privateRecord.answers['section-2-27']='Sector privado de prueba';
+ const created=await request('/forms/'+privateRecord.id+'/finish','POST',privateRecord,laura);
+ assert.equal(created.status,200);const eventId=created.body.eventId;eventIds.push(eventId);
+ const before=(await request('/events','GET',null,daniel)).body;
+ assert.ok(!before.some(event=>event.id===eventId));
+ const eventBefore=(await pool.query('SELECT * FROM evento_especifico WHERE id_evento_especifico=$1',[eventId])).rows[0];
+ for(const [method,suffix,value] of [['PUT','',eventId],['POST','/finish',eventId],['PUT','',Number(eventId)]]) {
+  const attack=fresh(complete);attack.eventId=value;
+  const rejected=await request('/forms/'+attack.id+suffix,method,attack,daniel);
+  assert.equal(rejected.status,422);
+  assert.equal((await pool.query('SELECT 1 FROM registro WHERE id_registro=$1',[attack.id])).rowCount,0);
+  const missing={...attack,eventId:'9223372036854775807'};
+  const unavailable=await request('/forms/'+attack.id+suffix,method,missing,daniel);
+  assert.equal(unavailable.status,rejected.status);assert.deepEqual(unavailable.body,rejected.body);
+ }
+ const own=fresh(complete);own.eventId=null;
+ const saved=await request('/forms/'+own.id,'PUT',own,daniel);assert.equal(saved.status,200);eventIds.push(saved.body.eventId);
+ const historyBefore=(await request('/forms/'+own.id+'/history','GET',null,daniel)).body;
+ const rebind={...saved.body,eventId};
+ assert.equal((await request('/forms/'+own.id,'PUT',rebind,daniel)).status,422);
+ assert.deepEqual((await request('/forms','GET',null,daniel)).body.find(record=>record.id===own.id),saved.body);
+ assert.deepEqual((await request('/forms/'+own.id+'/history','GET',null,daniel)).body,historyBefore);
+ // An old forged draft association is not a grant of access to the foreign event.
+ await pool.query('UPDATE desplazamiento SET id_evento_especifico=$1 WHERE id_registro=$2',[eventId,own.id]);
+ assert.equal((await request('/forms/'+own.id+'/finish','POST',rebind,daniel)).status,422);
+ assert.deepEqual((await request('/forms/'+own.id+'/history','GET',null,daniel)).body,historyBefore);
+ assert.deepEqual((await request('/events','GET',null,daniel)).body,before);
+ assert.deepEqual((await pool.query('SELECT * FROM evento_especifico WHERE id_evento_especifico=$1',[eventId])).rows[0],eventBefore);
+});
+
+test('Se reutilizan eventos propios y las asociaciones antiguas no conceden acceso ajeno',async()=>{
+ const r=fresh(complete);r.eventId=null;
+ const first=await request('/forms/'+r.id,'PUT',r,laura);assert.equal(first.status,200);eventIds.push(first.body.eventId);
+ const second=fresh(complete);second.eventId=first.body.eventId;
+ const reused=await request('/forms/'+second.id+'/finish','POST',second,laura);assert.equal(reused.status,200);
+ assert.equal(reused.body.eventId,first.body.eventId);
+ const finished=await request('/forms/'+r.id+'/finish','POST',first.body,laura);assert.equal(finished.status,200);
+ const originalMunicipality=finished.body.answers['section-2-42'];
+ finished.body.answers['section-2-42']='Municipio inexistente';
+ const draft=await request('/forms/'+r.id,'PUT',finished.body,laura);assert.equal(draft.status,200);assert.equal(draft.body.status,'pending');
+ draft.body.answers['section-2-42']=originalMunicipality;
+ assert.equal((await request('/forms/'+r.id+'/finish','POST',draft.body,laura)).status,200);
+ // A completed association forged by an older version must not remain an access grant.
+ const other=fresh(complete);other.eventId=null;
+ const shared=await request('/forms/'+other.id+'/finish','POST',other,daniel);assert.equal(shared.status,200);eventIds.push(shared.body.eventId);
+ await pool.query('UPDATE desplazamiento SET id_evento_especifico=$1 WHERE id_registro=$2',[first.body.eventId,other.id]);
+ const legacy={...shared.body,eventId:first.body.eventId};
+ const visible=(await request('/events','GET',null,daniel)).body;
+ assert.ok(!visible.some(event=>event.id===first.body.eventId));
+ assert.equal((await request('/statistics','GET',null,daniel)).body.totals.events,visible.length);
+ assert.equal((await request('/forms/'+other.id,'PUT',legacy,daniel)).status,422);
+ const additional=fresh(complete);additional.eventId=first.body.eventId;
+ assert.equal((await request('/forms/'+additional.id+'/finish','POST',additional,daniel)).status,422);
+ // The user can recover their existing record by selecting a new event, without losing the capture.
+ const recovered=await request('/forms/'+other.id,'PUT',{...legacy,eventId:null},daniel);
+ assert.equal(recovered.status,200);assert.notEqual(recovered.body.eventId,first.body.eventId);eventIds.push(recovered.body.eventId);
+ assert.equal(recovered.body.story,legacy.story);
+ assert.equal((await request('/forms/'+other.id+'/finish','POST',recovered.body,daniel)).status,200);
+});
+
 test('Terminar exige cada campo obligatorio aplicable; fallo no escribe y completar sí',async()=>{
  const r=fresh(complete);r.status='pending';r.answers['section-1-2']=String(randomInt(700000000,799999999));documents.push(r.answers['section-1-2']);
  const saved=await request('/forms/'+r.id,'PUT',r,laura);assert.equal(saved.status,200);

@@ -5,7 +5,7 @@ import {pool} from './db.mjs';
 export async function getStatistics(actor) {
  const result=await pool.query(`
   WITH captures AS MATERIALIZED (
-   SELECT r.id_registro,r.actualizado_en,r.estado,ds.id_evento_especifico,
+   SELECT r.id_registro,r.actualizado_en,r.estado,e.id_evento_especifico,
     ds.fecha_salida IS NOT NULL AS displaced,
     coalesce(nullif(a.snapshot #>> '{answers,section-1-1}',''),'CC') AS document_type,
     nullif(btrim(a.snapshot #>> '{answers,section-1-2}'),'') AS document,
@@ -21,6 +21,7 @@ export async function getStatistics(actor) {
    FROM registro r
    JOIN auditoria_registro a ON a.id_registro=r.id_registro AND a.version_registro=r.version_registro
    LEFT JOIN desplazamiento ds ON ds.id_registro=r.id_registro
+   LEFT JOIN evento_especifico e ON e.id_evento_especifico=ds.id_evento_especifico AND e.creado_por=$1
    WHERE r.id_funcionario=$1
   ), people AS (
    SELECT DISTINCT ON (document_type,document) sex

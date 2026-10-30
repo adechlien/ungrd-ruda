@@ -98,7 +98,7 @@ export async function listEvents(actor) {
  LEFT JOIN registro_declarante rd USING(id_registro) LEFT JOIN persona pe ON pe.id_persona=r.id_persona_declarante LEFT JOIN hogar h USING(id_registro)
  LEFT JOIN evento_principal p USING(id_evento_principal) LEFT JOIN tipo_evento t USING(id_tipo_evento)
  LEFT JOIN municipio m ON m.id_municipio=e.id_municipio LEFT JOIN departamento d ON d.id_departamento=m.id_departamento
- WHERE r.estado='terminado' AND r.id_funcionario=$1
+ WHERE r.estado='terminado' AND r.id_funcionario=$1 AND e.creado_por=$1
  GROUP BY e.id_evento_especifico,p.nombre,t.nombre,m.nombre,d.nombre ORDER BY e.creado_en DESC`, [actor.id_funcionario]);
  return r.rows;
 }
@@ -130,8 +130,10 @@ export async function saveForm(actor, id, input, finish = false) {
   let eventId = capture.eventId;
   if (eventId) {
    // Serialize event edits as well as association, including first-time associations.
-   const event = await c.query('SELECT id_evento_especifico FROM evento_especifico WHERE id_evento_especifico=$1 FOR UPDATE', [eventId]);
-   if (!event.rowCount) throw new ApiError(422, 'El evento seleccionado no existe.');
+   const event = await c.query('SELECT id_evento_especifico,creado_por FROM evento_especifico WHERE id_evento_especifico=$1 FOR UPDATE', [eventId]);
+   // Existing associations are not proof of authorization: older clients could forge them.
+   const accessible = event.rowCount && String(event.rows[0].creado_por) === String(actor.id_funcionario);
+   if (!accessible) throw new ApiError(422, 'El evento seleccionado no está disponible.');
    const others = await c.query('SELECT 1 FROM desplazamiento WHERE id_evento_especifico=$1 AND id_registro<>$2 LIMIT 1', [eventId, id]);
    if (!others.rowCount && a['section-2-30']) await update(c, 'evento_especifico', 'id_evento_especifico', eventId, { ...projected('evento_especifico', a), id_evento_principal: await resolvePrincipal(c, a), id_municipio: await municipality(c, a, 2, 25, 26), actualizado_en: new Date() });
   } else if (a['section-2-30']) {

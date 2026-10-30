@@ -27,12 +27,12 @@ await transaction(async c=>{
 const actors=(await pool.query('SELECT f.*,u.correo FROM funcionario f JOIN usuario u USING(id_funcionario) ORDER BY f.id_funcionario')).rows;
 const peter=actors.find(actor=>actor.correo==='peter@example.com');
 const gwen=actors.find(actor=>actor.correo==='gwen@example.com');
-const eventRows=(await pool.query(`SELECT e.id_evento_especifico AS id_evento,t.nombre AS tipo,m.nombre AS municipio,e.fecha_inicio::text AS fecha
+const eventRows=(await pool.query(`SELECT e.id_evento_especifico AS id_evento,e.creado_por,t.nombre AS tipo,m.nombre AS municipio,e.fecha_inicio::text AS fecha
  FROM evento_especifico e LEFT JOIN evento_principal t USING(id_evento_principal) LEFT JOIN municipio m USING(id_municipio)`)).rows;
 const eventKey=(a)=>[a['section-2-30'],a['section-2-26'],a['section-2-23']].join('|');
-const events=new Map(eventRows.map(event=>[[event.tipo,event.municipio,event.fecha].join('|'),String(event.id_evento)]));
 
 async function synchronizeDemoRecords(actor,records,{onlyWhenEmpty=false,documentPrefix=''}={}) {
+ const events=new Map(eventRows.filter(event=>String(event.creado_por)===String(actor.id_funcionario)).map(event=>[[event.tipo,event.municipio,event.fecha].join('|'),String(event.id_evento)]));
  const existing=await listForms(actor);
  if(onlyWhenEmpty && existing.length)return 0;
  const existingByDocument=new Map();
