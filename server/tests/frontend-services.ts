@@ -16,6 +16,7 @@ import { EventsService } from '../../src/app/core/services/events.service';
 import { FormEditorService } from '../../src/app/core/services/form-editor.service';
 import { StatisticsService } from '../../src/app/core/services/statistics.service';
 import type { FormRecord, SessionUser } from '../../src/app/core/models/records';
+import { EMPTY_STATISTICS } from '../../src/app/core/models/statistics';
 
 const actor = (id: string): SessionUser => ({
   id,
@@ -156,6 +157,22 @@ test('Registros y eventos: respuestas de una sesion anterior quedan fuera del es
   assert.equal(store.recordsLoading(), false);
 });
 
+test('Registros: una lista pendiente no elimina un guardado mas reciente', async (t) => {
+  const pending = deferred<FormRecord[]>();
+  const { store } = fixture(t, {
+    list: () => pending.promise,
+    save: async (r: FormRecord) => ({ ...r, version: r.version + 1 }),
+  });
+  const loading = store.ensureRecords();
+  const created = store.create();
+  await store.save(created);
+  pending.resolve([]);
+  await loading;
+  assert.equal(store.records().length, 1);
+  assert.equal(store.records()[0].id, created.id);
+  assert.equal(store.records()[0].version, 1);
+});
+
 test('Editor: serializa autoguardados y conserva las ediciones hechas durante una respuesta pendiente', async (t) => {
   const first = deferred<FormRecord>(),
     calls: FormRecord[] = [];
@@ -240,7 +257,12 @@ test('Estadisticas: consulta solo su contrato y cancela la respuesta reemplazada
       useValue: {
         get: (signal: AbortSignal) => {
           signals.push(signal);
-          return ++calls === 1 ? first.promise : Promise.resolve({ totals: { records: 2 } });
+          return ++calls === 1
+            ? first.promise
+            : Promise.resolve({
+                ...EMPTY_STATISTICS,
+                totals: { ...EMPTY_STATISTICS.totals, events: 2 },
+              });
         },
       },
     },
@@ -249,9 +271,9 @@ test('Estadisticas: consulta solo su contrato y cancela la respuesta reemplazada
   const stats = injector.get(StatisticsService);
   const older = stats.load();
   await stats.load();
-  first.resolve({ totals: { records: 99 } });
+  first.resolve({ ...EMPTY_STATISTICS, totals: { ...EMPTY_STATISTICS.totals, events: 99 } });
   await older;
   assert.equal(signals[0].aborted, true);
-  assert.equal(stats.summary()?.totals.records, 2);
+  assert.equal(stats.summary()?.totals.events, 2);
   assert.equal(stats.loading(), false);
 });

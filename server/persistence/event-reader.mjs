@@ -1,7 +1,8 @@
 export function createEventReader(database) {
- return {
-async list(actor) {
- const r = await database.query(`SELECT e.id_evento_especifico AS id, concat_ws(' · ',p.nombre,coalesce(m.nombre,'Ubicación pendiente')) AS nombre,
+  return {
+    async list(actor) {
+      const r = await database.query(
+        `SELECT e.id_evento_especifico AS id, concat_ws(' · ',p.nombre,coalesce(m.nombre,'Ubicación pendiente')) AS nombre,
  p.nombre AS tipo,t.nombre AS categoria,m.nombre AS municipio,d.nombre AS departamento,e.vereda_barrio_sector AS sector,e.direccion,
  e.fecha_inicio::text AS fecha,to_char(e.hora_inicio,'HH24:MI') AS hora,
  count(DISTINCT r.id_registro)::int AS declarations,count(DISTINCT r.id_registro)::int AS "myDeclarations",count(DISTINCT h.id_hogar)::int AS households,
@@ -15,8 +16,10 @@ async list(actor) {
  LEFT JOIN evento_principal p USING(id_evento_principal) LEFT JOIN tipo_evento t USING(id_tipo_evento)
  LEFT JOIN municipio m ON m.id_municipio=e.id_municipio LEFT JOIN departamento d ON d.id_departamento=m.id_departamento
  WHERE r.estado='terminado' AND r.id_funcionario=$1 AND e.creado_por=$1
- GROUP BY e.id_evento_especifico,p.nombre,t.nombre,m.nombre,d.nombre ORDER BY e.creado_en DESC`, [actor.id_funcionario]);
- return r.rows;
-},
- };
+ GROUP BY e.id_evento_especifico,p.nombre,t.nombre,m.nombre,d.nombre ORDER BY e.creado_en DESC`,
+        [actor.id_funcionario],
+      );
+      return r.rows;
+    },
+  };
 }

@@ -10,6 +10,7 @@ interface RecordsState {
   ready: boolean;
   loading: boolean;
   saving: boolean;
+  revision: number;
   error: string;
 }
 const empty = (owner: SessionUser | null): RecordsState => ({
@@ -18,8 +19,17 @@ const empty = (owner: SessionUser | null): RecordsState => ({
   ready: false,
   loading: false,
   saving: false,
+  revision: 0,
   error: '',
 });
+
+function mergeRecords(loaded: FormRecord[], local: FormRecord[]): FormRecord[] {
+  const records = new Map(loaded.map((record) => [record.id, record]));
+  for (const record of local) {
+    if (record.version >= (records.get(record.id)?.version ?? -1)) records.set(record.id, record);
+  }
+  return [...records.values()].sort((a, b) => b.savedAt.localeCompare(a.savedAt));
+}
 
 @Injectable({ providedIn: 'root' })
 export class FormRecordsService {
@@ -49,7 +59,11 @@ export class FormRecordsService {
     this.update(owner, (state) => ({ ...state, loading: true, error: '' }));
     try {
       const items = await this.gateway.list();
-      this.update(owner, (state) => ({ ...state, items, ready: true }));
+      this.update(owner, (current) => ({
+        ...current,
+        items: current.revision === state.revision ? items : mergeRecords(items, current.items),
+        ready: true,
+      }));
     } catch (error) {
       this.update(owner, (state) => ({ ...state, error: (error as Error).message }));
     } finally {
@@ -65,6 +79,7 @@ export class FormRecordsService {
       const saved = await this.gateway.save(record, finish);
       this.update(owner, (state) => ({
         ...state,
+        revision: state.revision + 1,
         items: [saved, ...state.items.filter((item) => item.id !== saved.id)],
       }));
       return saved;
@@ -80,6 +95,7 @@ export class FormRecordsService {
     if (owner)
       this.update(owner, (state) => ({
         ...state,
+        revision: state.revision + 1,
         items: state.items.map((record) => (record.id === id ? { ...record, acta } : record)),
       }));
   }

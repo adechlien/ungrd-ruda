@@ -1,10 +1,10 @@
 export function createStatisticsReader(database) {
- return {
-
-// Only the current version and the fields used by the indicators enter this query.
-// PostgreSQL returns aggregate rows, never captures, narratives or household data.
-async get(actor) {
- const result=await database.query(`
+  return {
+    // Only the current version and the fields used by the indicators enter this query.
+    // PostgreSQL returns aggregate rows, never captures, narratives or household data.
+    async get(actor) {
+      const result = await database.query(
+        `
   WITH captures AS MATERIALIZED (
    SELECT r.id_registro,r.actualizado_en,r.estado,e.id_evento_especifico,
     ds.fecha_salida IS NOT NULL AS displaced,
@@ -44,14 +44,25 @@ async get(actor) {
     ('departureCharacter',departure_character),('evolution',evolution)
    ) AS chart(key,label)
    WHERE displaced GROUP BY chart.key,coalesce(nullif(btrim(chart.label),''),'Sin información')
- `,[actor.id_funcionario]);
- const totals={events:0,displacements:0,declarants:0};
- const breakdowns={eventTypes:[],sex:[],origins:[],departureMoment:[],accommodation:[],noReturn:[],departureCharacter:[],evolution:[]};
- for(const {key,label,count} of result.rows) {
-  if(Object.hasOwn(totals,key))totals[key]=count;
-  else breakdowns[key].push({label,count});
- }
- return {totals,breakdowns};
-},
- };
+ `,
+        [actor.id_funcionario],
+      );
+      const totals = { events: 0, displacements: 0, declarants: 0 };
+      const breakdowns = {
+        eventTypes: [],
+        sex: [],
+        origins: [],
+        departureMoment: [],
+        accommodation: [],
+        noReturn: [],
+        departureCharacter: [],
+        evolution: [],
+      };
+      for (const { key, label, count } of result.rows) {
+        if (Object.hasOwn(totals, key)) totals[key] = count;
+        else breakdowns[key].push({ label, count });
+      }
+      return { totals, breakdowns };
+    },
+  };
 }
