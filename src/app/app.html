@@ -1,12 +1,12 @@
-@if (!recordStore.user()) {
+@if (!session.user()) {
   <!--Login-->
   <main class="min-h-screen flex flex-col items-center justify-center p-4 bg-surface-soft">
     <form class="w-full max-w-96 rounded-2xl border border-border-soft bg-surface p-6 shadow-[0_10px_35px_#282a660a]" (ngSubmit)="login()">
       <img class="justify-items-start mx-auto h-20 object-contain in-data-[[theme=dark]]:mix-blend-screen" [src]="darkThemeActive() ? '/logoungrd-dark.png' : '/logoungrd-light.png'" alt="UNGRD" />
       <div class="group/field min-w-0 pt-2 mt-6 [&_.outlined-control]:h-13 [&_.outlined-control]:rounded-[10px] [&_.outlined-control]:px-4.5 [&_.outlined-control:has(>input)]:px-0 [&_.outlined-control>input]:px-4.5"><label class="relative z-1 -my-2 ml-3.5 flex min-h-0 w-fit max-w-[calc(100%-32px)] items-center gap-1 bg-surface px-[5px] text-xs leading-4 font-normal text-brand-navy [overflow-wrap:anywhere] group-focus-within/field:text-brand-purple" for="login-email">Correo Institucional</label><input class="h-13 w-full rounded-[10px] border border-border-overlay bg-surface px-4.5 py-3 text-ink outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-1" id="login-email" name="email" type="email" autocomplete="username" [(ngModel)]="loginEmail" required /></div>
       <div class="group/field min-w-0 pt-2 mt-6 [&_.outlined-control]:h-13 [&_.outlined-control]:rounded-[10px] [&_.outlined-control]:px-4.5 [&_.outlined-control:has(>input)]:px-0 [&_.outlined-control>input]:px-4.5"><label class="relative z-1 -my-2 ml-3.5 flex min-h-0 w-fit max-w-[calc(100%-32px)] items-center gap-1 bg-surface px-[5px] text-xs leading-4 font-normal text-brand-navy [overflow-wrap:anywhere] group-focus-within/field:text-brand-purple" for="login-password">Contraseña</label><input class="h-13 w-full rounded-[10px] border border-border-overlay bg-surface px-4.5 py-3 text-ink outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-1" id="login-password" name="password" type="password" autocomplete="current-password" [(ngModel)]="loginPassword" required /></div>
-      @if (recordStore.storageError()) { <p role="alert" class="mt-4 text-[13px] leading-[1.7] text-danger">{{ recordStore.storageError() }}</p> }
-      <button class="mt-6.5 w-full rounded-lg bg-brand-purple p-[13px] text-white disabled:cursor-wait disabled:opacity-60" type="submit" [disabled]="recordStore.loading()">{{ recordStore.loading() ? 'Conectando…' : 'Ingresar' }}</button>
+      @if (session.error()) { <p role="alert" class="mt-4 text-[13px] leading-[1.7] text-danger">{{ session.error() }}</p> }
+      <button class="mt-6.5 w-full rounded-lg bg-brand-purple p-[13px] text-white disabled:cursor-wait disabled:opacity-60" type="submit" [disabled]="session.loading()">{{ session.loading() ? 'Conectando…' : 'Ingresar' }}</button>
     </form>
   </main>
 } @else {
@@ -34,8 +34,8 @@
         <!--Panel de perfil-->
         @if (profileOpen()) {
           <section #profileMenu class="workspace-profile-menu mb-2.5 border-solid rounded-lg bg-surface shadow-popup p-[17px] border border-border-soft" id="workspace-profile-menu" aria-label="Preferencias del perfil">
-            <strong class="block pt-0.5 pb-0 text-[15px] text-brand-navy px-0.5">{{ recordStore.user()?.name }}</strong>
-            <small class="workspace-profile-email block mt-[3px] mb-0 overflow-hidden text-secondary text-[11px] text-ellipsis whitespace-nowrap mx-0.5">{{ recordStore.user()?.email }}</small>
+            <strong class="block pt-0.5 pb-0 text-[15px] text-brand-navy px-0.5">{{ session.user()?.name }}</strong>
+            <small class="workspace-profile-email block mt-[3px] mb-0 overflow-hidden text-secondary text-[11px] text-ellipsis whitespace-nowrap mx-0.5">{{ session.user()?.email }}</small>
             <p class="workspace-profile-subtitle mt-4.5 mb-2 text-secondary text-[11px] font-semibold mx-0.5">Preferencias</p>
             <div class="workspace-theme-options grid grid-cols-3 gap-[7px]" role="radiogroup" aria-label="Tema de la interfaz">
               <button class="in-data-[theme=dark]:focus-visible:outline-[#ffca20] grid place-items-center w-full min-w-0 rounded-lg text-secondary p-2.5 enabled:hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-40 [&.selected]:bg-surface-selected [&.selected]:text-brand-navy [&.selected]:font-semibold focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3" type="button" role="radio" aria-label="Modo claro" title="Light" aria-checked="true" [class.selected]="true">
@@ -75,7 +75,7 @@
         <div class="workspace-profile-row flex items-center pt-4 pb-0 border-t border-solid border-t-border-soft px-0 gap-[3px] in-[[data-theme=dark]]:[border-top-color:rgb(255_255_255_/_20%)] max-[700px]:flex-col max-[700px]:py-3.5 max-[700px]:gap-2">
           <button #profileButton type="button" class="workspace-profile flex items-center min-w-0 flex-1 text-left rounded-[7px] py-[5px] px-0 gap-[9px] in-[[data-theme=dark]]:hover:bg-[rgb(255_255_255_/_10%)] in-[[data-theme=dark]]:focus-visible:[outline-color:#ffca20] max-[700px]:flex-none max-[700px]:justify-center max-[700px]:w-10 max-[700px]:p-1.5 hover:bg-surface-selected focus-visible:outline-solid focus-visible:outline-brand-purple focus-visible:outline-2 focus-visible:outline-offset-3" aria-label="Mi perfil" [attr.aria-expanded]="profileOpen()" aria-controls="workspace-profile-menu" (click)="toggleProfile()">
             <tabler-icon class="shrink-0 pl-1" icon="user-circle" [size]="27" /><span class="hidden max-[700px]:block">Perfil</span><span class="max-[700px]:hidden"
-              ><strong class="block text-[13px] font-semibold max-[1100px]:text-[12px]">{{ recordStore.user()?.name }}</strong><small class="in-[[data-theme=dark]]:text-[#ffca20] block text-[9px] tracking-[0.5px] mt-[1px] text-brand-purple">{{ recordStore.user()?.organizationType }}</small></span
+              ><strong class="block text-[13px] font-semibold max-[1100px]:text-[12px]">{{ session.user()?.name }}</strong><small class="in-[[data-theme=dark]]:text-[#ffca20] block text-[9px] tracking-[0.5px] mt-[1px] text-brand-purple">{{ session.user()?.organizationType }}</small></span
             >
           </button>
           <button #notificationsButton
@@ -117,7 +117,7 @@
             <tabler-icon icon="bell" [size]="22" /><span class="hidden max-[700px]:block">Avisos</span>
             @if (unreadNotifications() && pendingRecords().length) { <span class="workspace-unread absolute right-1 top-1 size-1.5 rounded-full bg-brand-purple in-[[data-theme=dark]]:bg-[#ffca20]" aria-hidden="true"></span> }
           </button>
-          <button #profileButton type="button" class="workspace-profile grid size-9 place-items-center rounded-full hover:bg-surface-selected in-[[data-theme=dark]]:hover:bg-[rgb(255_255_255_/_10%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-purple in-[[data-theme=dark]]:focus-visible:outline-[#ffca20]" aria-label="Mi perfil" [title]="recordStore.user()?.name || 'Mi perfil'" [attr.aria-expanded]="profileOpen()" aria-controls="workspace-profile-menu" (click)="toggleProfile()">
+          <button #profileButton type="button" class="workspace-profile grid size-9 place-items-center rounded-full hover:bg-surface-selected in-[[data-theme=dark]]:hover:bg-[rgb(255_255_255_/_10%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-purple in-[[data-theme=dark]]:focus-visible:outline-[#ffca20]" aria-label="Mi perfil" [title]="session.user()?.name || 'Mi perfil'" [attr.aria-expanded]="profileOpen()" aria-controls="workspace-profile-menu" (click)="toggleProfile()">
             <tabler-icon icon="user-circle" [size]="27" /><span class="hidden max-[700px]:block">Perfil</span>
           </button>
         </div>
@@ -142,7 +142,7 @@
           (createForm)="createRecord()"
         />
       }
-      @if (currentRecord()) {
+      @if (editor.currentRecord()) {
         <div [hidden]="view() !== 'form'">
           <div
             class="mx-auto flex max-w-360 flex-wrap items-center justify-between gap-3 px-5 pt-6"
@@ -154,24 +154,24 @@
               @if (recordStore.saving()) {
                 <span role="status" class="text-xs text-secondary">Guardando…</span>
               } @else {
-                <app-local-save-status [lastSavedAt]="savedLocallyAt()" />
+                <app-local-save-status [lastSavedAt]="editor.savedLocallyAt()" />
               }
             </div>
             <div class="flex flex-wrap items-center justify-end gap-3">
               <button type="button" class="flex items-center gap-2 rounded-lg px-4 py-2 text-sm text-brand-navy hover:bg-surface-muted disabled:opacity-50" [disabled]="recordStore.saving()" (click)="saveCurrentDraft()">
                 <tabler-icon icon="device-floppy" [size]="20" /> Guardar
               </button>
-              <button type="button" class="flex items-center gap-2 rounded-lg bg-brand-purple px-4 py-2 text-sm text-white hover:bg-brand-navy disabled:opacity-50 disabled:cursor-not-allowed" [disabled]="recordStore.saving() || !canFinish()" (click)="finishRecord()">
+              <button type="button" class="flex items-center gap-2 rounded-lg bg-brand-purple px-4 py-2 text-sm text-white hover:bg-brand-navy disabled:opacity-50 disabled:cursor-not-allowed" [disabled]="recordStore.saving() || !editor.canFinish()" (click)="finishRecord()">
                 <tabler-icon icon="check" [size]="20" /> Terminar registro
               </button>
             </div>
           </div>
-          @if (formMessage()) {
+          @if (editor.formMessage()) {
             <p
               role="alert"
               class="mx-auto mt-4 max-w-300 rounded-lg bg-warning-soft p-4 text-sm text-warning"
             >
-              {{ formMessage() }}
+              {{ editor.formMessage() }}
             </p>
           }
           @if (recordStore.storageError()) {
@@ -182,35 +182,35 @@
           <!-- Property bindings [dato] bajan estado; event bindings (evento) devuelven acciones hacia App. -->
           <main class="mx-auto w-full max-w-360 px-5 py-14 lg:pt-20">
             <app-form-stepper
-              [sections]="sections"
-              [activeSection]="activeSection()"
-              [completedSections]="completedSections()"
-              (sectionChange)="goToSection($event)"
+              [sections]="editor.sections"
+              [activeSection]="editor.activeSection()"
+              [completedSections]="editor.completedSections()"
+              (sectionChange)="editor.goToSection($event)"
             />
 
             @defer {
-            <app-dynamic-form [recordId]="currentRecord()?.id || ''" (coverRequested)="openSummary()"
-                [acta]="currentRecord()?.acta || null" [uploadingActa]="uploadingActa()" (actaSelected)="uploadActa($event)" (actaRemoved)="removeActa()" (repeatedRowRemoved)="removeRepeatedRow($event)"
-              [recordSummary]="recordSummary()"
-              [householdMembers]="members()"
-              (membersChange)="setMembers($event)"
-              [schema]="currentSchema()"
-              [activeSection]="activeSection()"
-              [story]="story()"
-              [selectedEvent]="selectedEvent()"
-              [selectedEventOption]="selectedEventOption()"
-              [selectedQuestions]="selectedQuestions()"
-              [answers]="answers()"
-              [sharedEvents]="recordStore.events()"
-              [sharedEventId]="currentRecord()?.eventId || ''"
-              [ethnicApplies]="ethnicApplies()"
-              [progress]="progressState()"
-              (storyChange)="setStory($event)"
-              (answerChange)="setAnswer($event.index, $event.value)"
-              (fieldChange)="setFieldValue($event.section, $event.id, $event.value)"
-              (sharedEventChange)="selectSharedEvent($event)"
-              (ethnicChange)="setEthnic($event)"
-              (sectionChange)="goToSection($event)"
+            <app-dynamic-form [recordId]="editor.currentRecord()?.id || ''" (coverRequested)="openSummary()"
+                [acta]="editor.currentRecord()?.acta || null" [uploadingActa]="editor.uploadingActa()" (actaSelected)="editor.uploadActa($event)" (actaRemoved)="editor.removeActa()" (repeatedRowRemoved)="editor.removeRepeatedRow($event)"
+              [recordSummary]="editor.recordSummary()"
+              [householdMembers]="editor.members()"
+              (membersChange)="editor.setMembers($event)"
+              [schema]="editor.currentSchema()"
+              [activeSection]="editor.activeSection()"
+              [story]="editor.story()"
+              [selectedEvent]="editor.selectedEvent()"
+              [selectedEventOption]="editor.selectedEventOption()"
+              [selectedQuestions]="editor.selectedQuestions()"
+              [answers]="editor.answers()"
+              [sharedEvents]="events.events()"
+              [sharedEventId]="editor.currentRecord()?.eventId || ''"
+              [ethnicApplies]="editor.ethnicApplies()"
+              [progress]="editor.progressState()"
+              (storyChange)="editor.setStory($event)"
+              (answerChange)="editor.setAnswer($event.index, $event.value)"
+              (fieldChange)="editor.setFieldValue($event.section, $event.id, $event.value)"
+              (sharedEventChange)="editor.selectSharedEvent($event)"
+              (ethnicChange)="editor.setEthnic($event)"
+              (sectionChange)="editor.goToSection($event)"
             />
             } @placeholder { <p class="p-6 text-sm text-secondary">Cargando registro…</p> }
           </main>
@@ -237,7 +237,7 @@
   <h2 class="text-[22px] font-bold mb-3.5" id="leave-title">¿Guardar el borrador y volver?</h2>
   <p class="text-[14px] leading-[1.6] mb-3" id="leave-description">Puede guardar el borrador para continuar después o volver sin guardar los cambios pendientes.</p>
   <p class="leave-note text-[12px] leading-[1.6] mb-3 text-secondary">Los cambios ya guardados automáticamente se conservarán.</p>
-  @if (formMessage()) { <p class="text-[14px] leading-[1.6] mb-3" role="alert">{{ formMessage() }}</p> }
+  @if (editor.formMessage()) { <p class="text-[14px] leading-[1.6] mb-3" role="alert">{{ editor.formMessage() }}</p> }
   <div class="leave-actions flex flex-wrap justify-end mt-6 gap-2.5">
     <button class="border-solid rounded-lg text-[14px] py-2.5 px-3.5 border border-border-soft disabled:opacity-50 disabled:cursor-wait" type="button" autofocus (click)="closeLeaveDialog()">Cancelar</button>
     <button class="border-solid rounded-lg text-[14px] py-2.5 px-3.5 border border-border-soft disabled:opacity-50 disabled:cursor-wait" type="button" [disabled]="recordStore.saving()" (click)="leaveUnsavedForm()">Volver sin guardar</button>

@@ -2,7 +2,9 @@ import { buildStatistics, StatisticsGroup } from './statistics';
 import { Component, ElementRef, HostListener, ViewChild, computed, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { TablerIconComponent } from '@tabler/icons-angular';
-import { EVENT_LABELS, FormRecord, FormRecordsService } from '../core/services/form-records.service';
+import {FormRecordsService} from '../core/services/form-records.service';
+import {EVENT_LABELS, FormRecord} from '../core/models/records';
+import {EventsService} from '../core/services/events.service';
 import { CustomSelectComponent } from '../shared/controls/custom-select.component';
 import { StatisticsService } from '../core/services/statistics.service';
 import { EMPTY_STATISTICS } from '../core/models/statistics';
@@ -22,13 +24,16 @@ export class DashboardComponent {
   readonly allEventTypesLabel = 'Todos los tipos de evento';
   readonly sortIcons: Record<string, string> = { Fecha: 'calendar', Sitio: 'map-pin', Evento: 'cloud-storm' };
   readonly store = inject(FormRecordsService);
+  readonly events=inject(EventsService);
+  readonly dataError=computed(()=>this.store.storageError()||this.events.error());
+  reloadData():void{void this.store.ensureRecords(true);void this.events.load(true);}
   readonly statistics = inject(StatisticsService);
   constructor() {
     effect(() => {
       const tab = this.tab();
       untracked(() => {
         if (tab === 'stats') void this.statistics.load();
-        else void this.store.ensureRecords();
+        else {void this.store.ensureRecords();void this.events.load(true);}
       });
     });
   }
@@ -80,13 +85,13 @@ export class DashboardComponent {
   readonly domainStats = computed(() => buildStatistics(this.statistics.summary() ?? EMPTY_STATISTICS));
   readonly filteredEvents = computed(() => {
     const query = this.normalize(this.eventQuery());
-    return this.store.events().filter(event => this.normalize([
+    return this.events.events().filter(event => this.normalize([
       event.nombre, event.tipo, event.categoria, event.municipio, event.departamento,
       event.fecha, ...(event.records ?? []).flatMap(record => [record.name, record.document, record.id]),
     ].filter(Boolean).join(' ')).includes(query));
   });
   readonly selectedEvent = computed(() =>
-    this.store.events().find(event => event.id === this.expandedEvent()) ?? null,
+    this.events.events().find(event => event.id === this.expandedEvent()) ?? null,
   );
   readonly eventFilterOptions = computed(() =>
     [this.allEventTypesLabel, ...[...new Set(this.store.records().map(record => record.answers['section-2-29']).filter(Boolean))]
@@ -97,8 +102,8 @@ export class DashboardComponent {
   ])));
   readonly selectedEventFilterLabel = computed(() => this.eventFilter() || this.allEventTypesLabel);
   readonly eventTotals = computed(() => ({
-    households: this.store.events().reduce((total, event) => total + event.households, 0),
-    people: this.store.events().reduce((total, event) => total + event.affectedPeople, 0),
+    households: this.events.events().reduce((total, event) => total + event.households, 0),
+    people: this.events.events().reduce((total, event) => total + event.affectedPeople, 0),
   }));
   readonly visibleStatCharts = computed(() =>
     this.domainStats().charts.filter((chart) => chart.group === this.statisticsTab()),

@@ -11,7 +11,7 @@ import { FormSectionLayoutComponent, FormProgressState } from '../shared/form-se
 import { departamentos } from 'colombia-territorial';
 import { EventOption, EventType } from './model/event-types';
 import { guideCode, memberNeedsCompletion, expandedFields, repeatedKey, validBirthDate } from './model/form-contract';
-import { SharedEvent, ActaFile } from '../core/services/form-records.service';
+import { SharedEvent, ActaFile } from '../core/models/records';
 
 @Component({ selector: 'app-dynamic-form', imports: [FormsModule, TablerIconComponent, CustomDatePickerComponent, CustomSelectComponent, CustomTimePickerComponent, FormSectionLayoutComponent], templateUrl: './dynamic-form.component.html' })
 export class DynamicFormComponent {
