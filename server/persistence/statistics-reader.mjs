@@ -1,9 +1,10 @@
-import {pool} from './db.mjs';
+export function createStatisticsReader(database) {
+ return {
 
 // Only the current version and the fields used by the indicators enter this query.
 // PostgreSQL returns aggregate rows, never captures, narratives or household data.
-export async function getStatistics(actor) {
- const result=await pool.query(`
+async get(actor) {
+ const result=await database.query(`
   WITH captures AS MATERIALIZED (
    SELECT r.id_registro,r.actualizado_en,r.estado,e.id_evento_especifico,
     ds.fecha_salida IS NOT NULL AS displaced,
@@ -51,4 +52,6 @@ export async function getStatistics(actor) {
   else breakdowns[key].push({label,count});
  }
  return {totals,breakdowns};
+},
+ };
 }

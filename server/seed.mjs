@@ -2,7 +2,8 @@ import { departamentos } from 'colombia-territorial';
 import { randomUUID } from 'node:crypto';
 import { pool, transaction } from './db.mjs';
 import { hashPassword } from './auth.mjs';
-import { listForms, saveForm } from './repository.mjs';
+import {services} from './composition.mjs';
+const {list: listForms, save: saveForm} = services.records;
 import { SECTION_SCHEMAS, GUIDE_OPTIONS, GUIDE_CODES, eventForType, EVENT_PRINCIPALS_BY_TYPE } from './generated/contract.mjs';
 import { demoSeeds } from './demo-records.mjs';
 await transaction(async c=>{

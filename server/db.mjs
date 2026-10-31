@@ -1,5 +1,4 @@
 import pg from 'pg';
-import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 try { process.loadEnvFile(resolve('.env')); } catch {}
 export const pool = new pg.Pool({
@@ -15,4 +14,3 @@ export async function transaction(work) {
  catch(error) { await client.query('ROLLBACK'); throw error; }
  finally {client.release();}
 }
-export const readJson = path => JSON.parse(readFileSync(new URL(path,import.meta.url),'utf8'));
